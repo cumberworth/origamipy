@@ -34,9 +34,8 @@ def main():
 
     decor_outs = decorrelate.DecorrelatedOutputs(
         sim_collections, rep_conditions_equal=False)
-#    decor_outs.perform_decorrelation(args.skip, g=100)
-#    decor_outs.perform_decorrelation(args.skip, detect_equil=True)
-    decor_outs.perform_decorrelation(args.skip)
+    decor_outs.perform_decorrelation(
+            args.skip, detect_equil=args.detect_equil, g=args.sample)
     decor_outs.apply_masks(filebase)
     decor_outs.write_decors_to_files(filebase)
 
@@ -102,6 +101,16 @@ def parse_args():
         'itr',
         type=int,
         help='US iteration')
+    parser.add_argument(
+        '--detect_equil',
+        type=bool,
+        default=False,
+        help='Detect and truncate equilibration period')
+    parser.add_argument(
+        '--sample',
+        type=int,
+        default=None,
+        help='Statistical inefficiency')
 
     return parser.parse_args()
 
