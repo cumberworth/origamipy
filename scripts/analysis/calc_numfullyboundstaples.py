@@ -22,21 +22,22 @@ def main():
     args = parse_args()
     system_file = files.JSONStructInpFile(args.system_filename)
     staple_lengths = utility.calc_staple_lengths(system_file)
-    inp_filebase = f'{args.outs_dir}/{args.filebase}'
+    inp_filebase = f"{args.outs_dir}/{args.filebase}"
     fileformatter = construct_fileformatter()
     all_conditions = conditions.construct_remc_conditions(
-        args.temps, args.staple_m, fileformatter, staple_lengths)
+        args.temps, args.staple_m, fileformatter, staple_lengths
+    )
     sim_collections = []
     for rep in range(args.reps):
         rep_sim_collections = outputs.create_sim_collections(
-            inp_filebase, all_conditions, rep)
+            inp_filebase, all_conditions, rep
+        )
         sim_collections.append(rep_sim_collections)
 
-    tag = 'numfullyboundstaples'
+    tag = "numfullyboundstaples"
     for rep_sim_collections in sim_collections:
         for sim_collection in rep_sim_collections:
-            staple_states = sim_collection.get_data(
-                'staplestates', concatenate=False)
+            staple_states = sim_collection.get_data("staplestates", concatenate=False)
             runs = len(staple_states)
             for run in range(runs):
                 back_ops_filebase = sim_collection.get_filebase(run)
@@ -47,47 +48,28 @@ def main():
                 else:
                     back_ops.add_column(tag, total_staples)
 
-                out_filebase = back_ops_filebase + '_mod'
+                out_filebase = back_ops_filebase + "_mod"
                 back_ops.to_file(out_filebase)
 
 
 def construct_fileformatter():
-    specs = [conditions.ConditionsFileformatSpec('temp', '{}')]
+    specs = [conditions.ConditionsFileformatSpec("temp", "{}")]
     return conditions.ConditionsFileformatter(specs)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        'system_filename',
-        type=str,
-        help='System file')
-    parser.add_argument(
-        'filebase',
-        type=str,
-        help='Base name for files')
-    parser.add_argument(
-        'outs_dir',
-        type=str,
-        help='outs directory')
-    parser.add_argument(
-        'staple_m',
-        type=float,
-        help='Staple molarity (mol/V)')
-    parser.add_argument(
-        'reps',
-        type=int,
-        help='Number of reps')
-    parser.add_argument(
-        '--temps',
-        nargs='+',
-        type=str,
-        help='Temperatures')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("system_filename", type=str, help="System file")
+    parser.add_argument("filebase", type=str, help="Base name for files")
+    parser.add_argument("outs_dir", type=str, help="outs directory")
+    parser.add_argument("staple_m", type=float, help="Staple molarity (mol/V)")
+    parser.add_argument("reps", type=int, help="Number of reps")
+    parser.add_argument("--temps", nargs="+", type=str, help="Temperatures")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

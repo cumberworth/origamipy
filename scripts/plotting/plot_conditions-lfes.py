@@ -22,7 +22,7 @@ def main():
     mappable = plot_figure(f, ax, vars(args))
     setup_axis(ax)
     set_labels(f, ax, mappable)
-    plot_filebase = f'{args.plots_dir}/{args.filebase}'
+    plot_filebase = f"{args.plots_dir}/{args.filebase}"
     save_figure(f, plot_filebase)
 
 
@@ -34,60 +34,55 @@ def setup_figure():
 
 
 def plot_figure(f, ax, args):
-    filebase = args['filebase']
-    input_dir = args['input_dir']
+    filebase = args["filebase"]
+    input_dir = args["input_dir"]
 
-    inp_filebase = f'{input_dir}/{filebase}'
-    aves = pd.read_csv(f'{inp_filebase}.aves', sep=' ', index_col=0)
+    inp_filebase = f"{input_dir}/{filebase}"
+    aves = pd.read_csv(f"{inp_filebase}.aves", sep=" ", index_col=0)
     temps = np.array(aves.columns, dtype=float)
     norm = mpl.colors.Normalize(vmin=temps[0], vmax=temps[-1])
     cmap = mpl.cm.viridis
     mappable = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
 
-    stds = pd.read_csv(f'{inp_filebase}.stds', sep=' ')
+    stds = pd.read_csv(f"{inp_filebase}.stds", sep=" ")
     for i in range(len(aves.columns)):
         ax.errorbar(
-                aves.index, aves.iloc[:, i], yerr=stds.iloc[:, i], marker='o',
-                color=mappable.to_rgba(temps[i]))
+            aves.index,
+            aves.iloc[:, i],
+            yerr=stds.iloc[:, i],
+            marker="o",
+            color=mappable.to_rgba(temps[i]),
+        )
 
     return mappable
 
 
 def setup_axis(ax):
-    ax.set_ylabel('$k_\mathrm{b}T$')
+    ax.set_ylabel("$k_\mathrm{b}T$")
     ax.set_ylim([-0.5, 20])
 
 
 def set_labels(f, ax, mappable):
-    cbar = f.colorbar(mappable, orientation='horizontal')
-    cbar.ax.set_xlabel('Temperature / K')
+    cbar = f.colorbar(mappable, orientation="horizontal")
+    cbar.ax.set_xlabel("Temperature / K")
 
 
 def save_figure(f, plot_filebase):
-    #f.savefig(plot_filebase + '.pgf', transparent=True)
-    f.savefig(plot_filebase + '.pdf', transparent=True)
-    f.savefig(plot_filebase + '.png', transparent=True)
+    # f.savefig(plot_filebase + '.pgf', transparent=True)
+    f.savefig(plot_filebase + ".pdf", transparent=True)
+    f.savefig(plot_filebase + ".png", transparent=True)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
-    parser.add_argument(
-        'plots_dir',
-        type=str,
-        help='Plots directory')
-    parser.add_argument(
-        'filebase',
-        type=str,
-        help='Filebase')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("plots_dir", type=str, help="Plots directory")
+    parser.add_argument("filebase", type=str, help="Filebase")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

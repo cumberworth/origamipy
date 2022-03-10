@@ -24,7 +24,8 @@ def main():
                 for seq_j in chain_j:
                     if seq_i_revcomp == seq_j:
                         h, s = nn.calc_hybridization_enthalpy_and_entropy(
-                            seq_i, args.cation_M)
+                            seq_i, args.cation_M
+                        )
                         binding_h.append(nn.remove_energy_units(h))
                         binding_s.append(nn.remove_energy_units(s))
                     else:
@@ -33,7 +34,8 @@ def main():
                         seqs_s = []
                         for seq in seqs:
                             h, s = nn.calc_hybridization_enthalpy_and_entropy(
-                                seq, args.cation_M)
+                                seq, args.cation_M
+                            )
                             seqs_h.append(h)
                             seqs_s.append(s)
 
@@ -41,15 +43,13 @@ def main():
                             misbinding_h.append(0)
                             misbinding_s.append(0)
                         else:
-                            misbinding_h.append(nn.remove_energy_units(
-                                np.mean(seqs_h)))
-                            misbinding_s.append(nn.remove_energy_units(
-                                np.mean(seqs_s)))
+                            misbinding_h.append(nn.remove_energy_units(np.mean(seqs_h)))
+                            misbinding_s.append(nn.remove_energy_units(np.mean(seqs_s)))
 
     sbinding_h = []
     sbinding_s = []
     for staple in origami.sequences[1:]:
-        seq = ''
+        seq = ""
         for s in staple:
             seq += s
 
@@ -57,30 +57,24 @@ def main():
         sbinding_h.append(nn.remove_energy_units(h))
         sbinding_s.append(nn.remove_energy_units(s))
 
-    print('Average bound domain hybridization enthalpy: ', np.mean(binding_h))
-    print('Average bound domain hybridization entropy: ', np.mean(binding_s))
-    print('Average misbound domain hybridization enthalpy: ', np.mean(misbinding_h))
-    print('Average misbound domain hybridization entropy: ', np.mean(misbinding_s))
-    print('Average staple hybridization enthalpy: ', np.mean(sbinding_h))
-    print('Average staple domain hybridization entropy: ', np.mean(sbinding_s))
+    print("Average bound domain hybridization enthalpy: ", np.mean(binding_h))
+    print("Average bound domain hybridization entropy: ", np.mean(binding_s))
+    print("Average misbound domain hybridization enthalpy: ", np.mean(misbinding_h))
+    print("Average misbound domain hybridization entropy: ", np.mean(misbinding_s))
+    print("Average staple hybridization enthalpy: ", np.mean(sbinding_h))
+    print("Average staple domain hybridization entropy: ", np.mean(sbinding_s))
 
 
 def parse_cl():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        'system_file',
-        type=str,
-        help='System file')
-    parser.add_argument(
-        'cation_M',
-        type=float,
-        help='Cation concentration')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("system_file", type=str, help="System file")
+    parser.add_argument("cation_M", type=float, help="Cation concentration")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -10,16 +10,16 @@ from origamipy import datatypes
 from origamipy import utility
 
 
-NUM_STAPLES_TAG = 'numstaples'
+NUM_STAPLES_TAG = "numstaples"
 
 
 class DecorrelatedOutputs:
     """Represents decorrelated outputs of a simulation."""
-    _datatypes = ['enes', 'ops', 'staples', 'staplestates']
-    _trjtypes = ['trj', 'vcf', 'ores', 'states']
 
-    def __init__(self, sim_collections, all_conditions=None,
-                 rep_conditions_equal=True):
+    _datatypes = ["enes", "ops", "staples", "staplestates"]
+    _trjtypes = ["trj", "vcf", "ores", "states"]
+
+    def __init__(self, sim_collections, all_conditions=None, rep_conditions_equal=True):
         self.all_conditions = all_conditions
 
         self._sim_collections = sim_collections
@@ -35,7 +35,7 @@ class DecorrelatedOutputs:
         for decors in self._datatype_to_decors.values():
             datatype = decors[0][0]
             for se_tag in datatype.tags:
-                if se_tag == 'step':
+                if se_tag == "step":
                     continue
 
                 se_tags.append(se_tag)
@@ -46,10 +46,10 @@ class DecorrelatedOutputs:
     def num_steps_per_condition(self):
         steps = []
         if self._rep_conditions_equal:
-            for data in self._datatype_to_decors['enes'][0]:
+            for data in self._datatype_to_decors["enes"][0]:
                 steps.append(0)
 
-        for reps_data in self._datatype_to_decors['enes']:
+        for reps_data in self._datatype_to_decors["enes"]:
             for i, data in enumerate(reps_data):
                 if self._rep_conditions_equal:
                     steps[i] += data.steps
@@ -77,7 +77,7 @@ class DecorrelatedOutputs:
             for reps_data in self._datatype_to_decors.values():
                 if se_tag in reps_data[0][0]._tags:
                     concat = []
-                    for j in range(len(self._datatype_to_decors['enes'][0])):
+                    for j in range(len(self._datatype_to_decors["enes"][0])):
                         for rep_data in reps_data:
                             concat.append(rep_data[j][se_tag])
 
@@ -101,17 +101,20 @@ class DecorrelatedOutputs:
                 raise Exception
 
     def perform_decorrelation(self, skip, detect_equil=False, g=None):
-        print('Performing decorrelations')
-        print('State'.ljust(20) +
-              'configs'.ljust(8) +
-              't0'.ljust(8) +
-              'g'.ljust(8) +
-              'Neff'.ljust(8))
+        print("Performing decorrelations")
+        print(
+            "State".ljust(20)
+            + "configs".ljust(8)
+            + "t0".ljust(8)
+            + "g".ljust(8)
+            + "Neff".ljust(8)
+        )
         for rep_sim_collections in self._sim_collections:
             self._decor_masks.append([])
             for sim_collection in rep_sim_collections:
                 mask = self._construct_decorrelation_mask(
-                    sim_collection, skip, detect_equil, g)
+                    sim_collection, skip, detect_equil, g
+                )
                 self._decor_masks[-1].append(mask)
 
     def read_decors_from_files(self, data_only=False):
@@ -153,12 +156,16 @@ class DecorrelatedOutputs:
 
                     # Would need to change for when using subset of reps
                     filebase = sim_collection.decor_filebase_template.format(
-                        out_filebase, sim_collection._start_run,
-                        sim_collection._end_run, i,
-                        sim_collection.conditions.fileformat)
-                    filename = '{}.{}'.format(filebase, trjtype)
-                    decor_trj = self._apply_mask_to_trjs(self._decor_masks[i][j],
-                                                         trjs, filename)
+                        out_filebase,
+                        sim_collection._start_run,
+                        sim_collection._end_run,
+                        i,
+                        sim_collection.conditions.fileformat,
+                    )
+                    filename = "{}.{}".format(filebase, trjtype)
+                    decor_trj = self._apply_mask_to_trjs(
+                        self._decor_masks[i][j], trjs, filename
+                    )
                     self._trjtype_to_decors[trjtype][-1].append(decor_trj)
 
     def write_decors_to_files(self, out_filebase):
@@ -168,15 +175,18 @@ class DecorrelatedOutputs:
 
                     # Would need to change for when using subset of reps
                     filebase = sim_collection.decor_filebase_template.format(
-                        out_filebase, sim_collection._start_run,
-                        sim_collection._end_run, i,
-                        sim_collection.conditions.fileformat)
-                    if datatype == 'enes':
-                        self._datatype_to_decors[datatype][i][j].to_file( 
-                            filebase, float(sim_collection.conditions.temp))
-                    else:
+                        out_filebase,
+                        sim_collection._start_run,
+                        sim_collection._end_run,
+                        i,
+                        sim_collection.conditions.fileformat,
+                    )
+                    if datatype == "enes":
                         self._datatype_to_decors[datatype][i][j].to_file(
-                            filebase)
+                            filebase, float(sim_collection.conditions.temp)
+                        )
+                    else:
+                        self._datatype_to_decors[datatype][i][j].to_file(filebase)
 
     def filter_collections(self, op_tag, value):
         filtered_count = 0
@@ -184,7 +194,7 @@ class DecorrelatedOutputs:
             for j, sim_collection in enumerate(rep_sim_collections):
 
                 # Create mask
-                selected_op = self._datatype_to_decors['ops'][i][j][op_tag]
+                selected_op = self._datatype_to_decors["ops"][i][j][op_tag]
                 mask = selected_op == value
                 filtered_count += mask.sum()
 
@@ -201,33 +211,36 @@ class DecorrelatedOutputs:
         return filtered_count
 
     def _construct_decorrelation_mask(self, sim_collection, skip, detect_equil, g):
-        enes = sim_collection.get_data('enes')
-        ops = sim_collection.get_data('ops')
-        num_staples = sim_collection.get_data('staples')
+        enes = sim_collection.get_data("enes")
+        ops = sim_collection.get_data("ops")
+        num_staples = sim_collection.get_data("staples")
         steps = enes.steps
         rpots = utility.calc_reduced_potentials(
-            enes, ops, num_staples, sim_collection.conditions)
+            enes, ops, num_staples, sim_collection.conditions
+        )
         if g != None:
             start_i = 0
-            indices = timeseries.subsampleCorrelatedData(rpots, g=skip*g)
+            indices = timeseries.subsampleCorrelatedData(rpots, g=skip * g)
             Neff = len(indices)
         elif detect_equil:
             start_i, g, Neff = timeseries.detectEquilibration(rpots, nskip=skip)
-            indices = timeseries.subsampleCorrelatedData(
-                rpots[start_i:], g=skip*g)
+            indices = timeseries.subsampleCorrelatedData(rpots[start_i:], g=skip * g)
         else:
             start_i = 0
             g = timeseries.statisticalInefficiency(rpots)
-            indices = timeseries.subsampleCorrelatedData(rpots, g=skip*g)
+            indices = timeseries.subsampleCorrelatedData(rpots, g=skip * g)
             Neff = len(indices)
-            
-        template = '{:<20}{:<8}{:<8}{:<8.1f}{:.1f}'
-        print(template.format(sim_collection.conditions.fileformat, steps,
-                              start_i, g, Neff))
+
+        template = "{:<20}{:<8}{:<8}{:<8.1f}{:.1f}"
+        print(
+            template.format(
+                sim_collection.conditions.fileformat, steps, start_i, g, Neff
+            )
+        )
         return [i + start_i for i in indices]
 
     def _apply_mask_to_trjs(self, mask, trjs, filename):
-        out_file = open(filename, 'w')
+        out_file = open(filename, "w")
         step_i = 0
         mask_i = 0
         for trj in trjs:

@@ -24,8 +24,8 @@ def main():
     axes = [ax, ax.twiny()]
     plot_figure(f, axes, vars(args))
     setup_axis(axes)
-#    set_labels(f, ax, mappable)
-    plot_filebase = f'{args.plots_dir}/{args.filebase}'
+    #    set_labels(f, ax, mappable)
+    plot_filebase = f"{args.plots_dir}/{args.filebase}"
     save_figure(f, plot_filebase)
 
 
@@ -37,55 +37,53 @@ def setup_figure():
 
 
 def plot_figure(f, axes, args):
-    filebase = args['filebase']
-    input_dir = args['input_dir']
-    cmap = cm.get_cmap('tab10')
-    markers = ['^', 's', 'o']
-    tags = ['numfullyboundstaples', 'numfulldomains']
-    labels = ['Fully bound staples', 'Bound domains']
+    filebase = args["filebase"]
+    input_dir = args["input_dir"]
+    cmap = cm.get_cmap("tab10")
+    markers = ["^", "s", "o"]
+    tags = ["numfullyboundstaples", "numfulldomains"]
+    labels = ["Fully bound staples", "Bound domains"]
 
     for j, tag in enumerate(tags):
-        if tag == 'numfulldomains':
+        if tag == "numfulldomains":
             ax = axes[1]
         else:
             ax = axes[0]
 
-        replica_filebase = f'{input_dir}/{filebase}_lfes-{tag}'
-        replica_aves = pd.read_csv(f'{replica_filebase}.aves', sep=' ',
-                                   index_col=0)
-        replica_stds = pd.read_csv(f'{replica_filebase}.stds', sep=' ',
-                                  index_col=0)
-        melting_filebase = f'{input_dir}/{filebase}_lfes-melting-{tag}'
-        melting_aves = pd.read_csv(f'{melting_filebase}.aves', sep=' ',
-                                  index_col=0)
-        melting_stds = pd.read_csv(f'{melting_filebase}.stds', sep=' ',
-                                  index_col=0)
+        replica_filebase = f"{input_dir}/{filebase}_lfes-{tag}"
+        replica_aves = pd.read_csv(f"{replica_filebase}.aves", sep=" ", index_col=0)
+        replica_stds = pd.read_csv(f"{replica_filebase}.stds", sep=" ", index_col=0)
+        melting_filebase = f"{input_dir}/{filebase}_lfes-melting-{tag}"
+        melting_aves = pd.read_csv(f"{melting_filebase}.aves", sep=" ", index_col=0)
+        melting_stds = pd.read_csv(f"{melting_filebase}.stds", sep=" ", index_col=0)
 
         temps = np.array(replica_aves.columns, dtype=float)
-        #norm = mpl.colors.Normalize(vmin=temps[0], vmax=temps[-1])
-        #cmap = mpl.cm.viridis
-        #mappable = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
+        # norm = mpl.colors.Normalize(vmin=temps[0], vmax=temps[-1])
+        # cmap = mpl.cm.viridis
+        # mappable = mpl.cm.ScalarMappable(norm=norm, cmap=cmap)
 
         for i, k in enumerate([0, -1]):
             ax.errorbar(
-                    replica_aves.index,
-                    replica_aves.iloc[:, k],
-                    yerr=replica_stds.iloc[:, k],
-                    marker=markers[i],
-#                    alpha=0.5,
-                    color=plotutils.darken_color(cmap(j)[:-1], 1.3))
-                    #color=mappable.to_rgba(temps[i]))
+                replica_aves.index,
+                replica_aves.iloc[:, k],
+                yerr=replica_stds.iloc[:, k],
+                marker=markers[i],
+                #                    alpha=0.5,
+                color=plotutils.darken_color(cmap(j)[:-1], 1.3),
+            )
+            # color=mappable.to_rgba(temps[i]))
 
         ax.errorbar(
-                melting_aves.index,
-                melting_aves.iloc[:, 0],
-                yerr=melting_stds.iloc[:, 0],
-                marker=markers[2],
-                color=cmap(j),
-                label=labels[j])
-                #color=mappable.to_rgba(temps[i]))
+            melting_aves.index,
+            melting_aves.iloc[:, 0],
+            yerr=melting_stds.iloc[:, 0],
+            marker=markers[2],
+            color=cmap(j),
+            label=labels[j],
+        )
+        # color=mappable.to_rgba(temps[i]))
 
-    #return mappable
+    # return mappable
 
 
 def setup_axis(axes, ylabel=None, xlabel_bottom=None, xlabel_top=None, ylim_top=None):
@@ -108,30 +106,21 @@ def set_labels(f, ax, mappable):
 
 
 def save_figure(f, plot_filebase):
-    #f.savefig(plot_filebase + '.pgf', transparent=True)
-    f.savefig(plot_filebase + '.pdf', transparent=True)
-    f.savefig(plot_filebase + '.png', transparent=True)
+    # f.savefig(plot_filebase + '.pgf', transparent=True)
+    f.savefig(plot_filebase + ".pdf", transparent=True)
+    f.savefig(plot_filebase + ".png", transparent=True)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
-    parser.add_argument(
-        'plots_dir',
-        type=str,
-        help='Plots directory')
-    parser.add_argument(
-        'filebase',
-        type=str,
-        help='Filebase')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("plots_dir", type=str, help="Plots directory")
+    parser.add_argument("filebase", type=str, help="Filebase")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

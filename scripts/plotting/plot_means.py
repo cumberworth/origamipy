@@ -23,7 +23,7 @@ def main():
     ax = f.add_subplot(gs[0])
     plot_figure(f, ax, vars(args))
     setup_axis(ax, args.tag)
-#    set_labels(ax, ax)
+    #    set_labels(ax, ax)
     save_figure(f, args.plot_filebase)
 
 
@@ -35,20 +35,20 @@ def setup_figure():
 
 
 def plot_figure(f, ax, args, labels=None):
-    systems = args['systems']
-    varis = args['varis']
-    input_dir = args['input_dir']
-    tag = args['tag']
-    assembled_values = args['assembled_values']
-    posts = args['posts']
-    nncurves = args['nncurves']
-    staple_M = args['staple_M']
-    binds = args['binds']
-    bindh = args['bindh']
-    stackene = args['stackene']
-    contins = args['continuous']
+    systems = args["systems"]
+    varis = args["varis"]
+    input_dir = args["input_dir"]
+    tag = args["tag"]
+    assembled_values = args["assembled_values"]
+    posts = args["posts"]
+    nncurves = args["nncurves"]
+    staple_M = args["staple_M"]
+    binds = args["binds"]
+    bindh = args["bindh"]
+    stackene = args["stackene"]
+    contins = args["continuous"]
 
-    cmap = cm.get_cmap('tab10')
+    cmap = cm.get_cmap("tab10")
 
     lines = []
 
@@ -63,7 +63,7 @@ def plot_figure(f, ax, args, labels=None):
         if posts is not None:
             post = posts[i]
         else:
-            post = ''
+            post = ""
 
         if nncurves is not None:
             nncurve = nncurves[i]
@@ -75,135 +75,100 @@ def plot_figure(f, ax, args, labels=None):
         else:
             contin = False
 
-        ax.axhline(assembled_value, linestyle='--', color=cmap(i))
+        ax.axhline(assembled_value, linestyle="--", color=cmap(i))
 
-        inp_filebase = f'{input_dir}/{system}-{vari}{post}'
+        inp_filebase = f"{input_dir}/{system}-{vari}{post}"
         all_aves, all_stds = plot.read_expectations(inp_filebase)
-        temps = all_aves['temp']
+        temps = all_aves["temp"]
         means = all_aves[tag]
         stds = all_stds[tag]
         if nncurve:
             fracs = nn.calc_excess_bound_fractions(bindh, binds, staple_M, 10)
-            interpolated_temp = interpolate.interp1d(means, temps, kind='linear')
-            halfway_temp = interpolated_temp(assembled_value/2)
+            interpolated_temp = interpolate.interp1d(means, temps, kind="linear")
+            halfway_temp = interpolated_temp(assembled_value / 2)
             occ_temps = np.linspace(halfway_temp - 10, halfway_temp + 10, 50)
-            ax.plot(occ_temps, fracs*assembled_value, color='0.4')
+            ax.plot(occ_temps, fracs * assembled_value, color="0.4")
 
         if contin:
-            ax.fill_between(temps, means + stds, means - stds, color='0.8')
-            lines.append(ax.plot(temps, means, marker='None', label=label, color=cmap(i))[0])
+            ax.fill_between(temps, means + stds, means - stds, color="0.8")
+            lines.append(
+                ax.plot(temps, means, marker="None", label=label, color=cmap(i))[0]
+            )
 
             # Plot the actual simulation temperature as a point
-            inp_filebase = f'{input_dir}/{system}-{vari}'
+            inp_filebase = f"{input_dir}/{system}-{vari}"
             all_aves, all_stds = plot.read_expectations(inp_filebase)
             mean = all_aves[tag]
             std = all_stds[tag]
-            temp = all_aves['temp']
-            ax.errorbar(
-                temp,
-                mean,
-                yerr=std,
-                marker='o',
-                label=label,
-                color=cmap(i))
+            temp = all_aves["temp"]
+            ax.errorbar(temp, mean, yerr=std, marker="o", label=label, color=cmap(i))
         else:
-            lines.append(ax.errorbar(
-                temps,
-                means,
-                yerr=stds,
-                marker='o',
-                label=label,
-                color=cmap(i))[1][1])
+            lines.append(
+                ax.errorbar(
+                    temps, means, yerr=stds, marker="o", label=label, color=cmap(i)
+                )[1][1]
+            )
 
     return lines
 
 
 def setup_axis(ax, ylabel):
-    ax.set_xlabel(r'$T / K$')
+    ax.set_xlabel(r"$T / K$")
     ax.set_ylabel(ylabel)
 
 
 def set_labels(ax):
     ax.set_axis_off()
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels, loc='center', frameon=False, ncol=1)
+    ax.legend(handles, labels, loc="center", frameon=False, ncol=1)
 
 
 def save_figure(f, plot_filebase):
-    #f.savefig(plot_filebase + '.pgf', transparent=True)
-    f.savefig(plot_filebase + '.pdf', transparent=True)
-    f.savefig(plot_filebase + '.png', transparent=True)
+    # f.savefig(plot_filebase + '.pgf', transparent=True)
+    f.savefig(plot_filebase + ".pdf", transparent=True)
+    f.savefig(plot_filebase + ".png", transparent=True)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("plot_filebase", type=str, help="Plots directory")
+    parser.add_argument("tag", type=str, help="OP tag")
     parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
-    parser.add_argument(
-        'plot_filebase',
-        type=str,
-        help='Plots directory')
-    parser.add_argument(
-        'tag',
-        type=str,
-        help='OP tag')
-    parser.add_argument(
-        '--assembled_values',
-        nargs='+',
+        "--assembled_values",
+        nargs="+",
         type=int,
-        help='Values of OP in assembled state')
+        help="Values of OP in assembled state",
+    )
+    parser.add_argument("--systems", nargs="+", type=str, help="Systems")
+    parser.add_argument("--varis", nargs="+", type=str, help="Simulation variants")
     parser.add_argument(
-        '--systems',
-        nargs='+',
+        "--posts",
+        nargs="+",
         type=str,
-        help='Systems')
+        help="Extra part of mean name (e.g. _temps for MWUS extrapolation",
+    )
     parser.add_argument(
-        '--varis',
-        nargs='+',
-        type=str,
-        help='Simulation variants')
+        "--nncurves", nargs="+", type=bool, help="Include shifted NN curve"
+    )
     parser.add_argument(
-        '--posts',
-        nargs='+',
-        type=str,
-        help='Extra part of mean name (e.g. _temps for MWUS extrapolation')
+        "--staple_M", default="", type=float, help="Staple concentration"
+    )
     parser.add_argument(
-        '--nncurves',
-        nargs='+',
-        type=bool,
-        help='Include shifted NN curve')
+        "--binds", default="", type=float, help="Domain binding entropy"
+    )
     parser.add_argument(
-        '--staple_M',
-        default='',
-        type=float,
-        help='Staple concentration')
+        "--bindh", default="", type=float, help="Domain binding enthalpy"
+    )
+    parser.add_argument("--stackene", default="", type=float, help="Stacking energy")
     parser.add_argument(
-        '--binds',
-        default='',
-        type=float,
-        help='Domain binding entropy')
-    parser.add_argument(
-        '--bindh',
-        default='',
-        type=float,
-        help='Domain binding enthalpy')
-    parser.add_argument(
-        '--stackene',
-        default='',
-        type=float,
-        help='Stacking energy')
-    parser.add_argument(
-        '--continuous',
-        nargs='+',
-        type=bool,
-        help='Plot curves as continuous')
+        "--continuous", nargs="+", type=bool, help="Plot curves as continuous"
+    )
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

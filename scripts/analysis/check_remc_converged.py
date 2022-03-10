@@ -23,16 +23,16 @@ def main():
     fileformatter = construct_fileformatter()
     all_conditions = construct_conditions(args, fileformatter, system_file)
     inp_filebase = create_input_filepathbase(args)
-    sim_collections = outputs.create_sim_collections(inp_filebase,
-                                                     all_conditions, args.reps)
+    sim_collections = outputs.create_sim_collections(
+        inp_filebase, all_conditions, args.reps
+    )
     reps = len(sim_collections[0]._reps)
     reps_converged = [False for i in range(reps)]
     for rep in range(reps):
         for sim_collection in sim_collections:
-            ops = sim_collection.get_reps_data('ops')[rep]
-            stacked_pairs = ops['numstackedpairs']
-            fully_stacked = np.where(
-                stacked_pairs == args.fully_stacked_pairs)[0]
+            ops = sim_collection.get_reps_data("ops")[rep]
+            stacked_pairs = ops["numstackedpairs"]
+            fully_stacked = np.where(stacked_pairs == args.fully_stacked_pairs)[0]
             if len(fully_stacked) == 0:
                 continue
 
@@ -48,76 +48,57 @@ def main():
 
 
 def construct_fileformatter():
-    specs = [conditions.ConditionsFileformatSpec('temp', '{}')]
+    specs = [conditions.ConditionsFileformatSpec("temp", "{}")]
     return conditions.ConditionsFileformatter(specs)
 
 
 def construct_conditions(args, fileformatter, system_file):
-    conditions_map = {'temp': args.temps,
-                      'staple_m': [args.staple_m],
-                      'bias': [biases.NoBias()]}
+    conditions_map = {
+        "temp": args.temps,
+        "staple_m": [args.staple_m],
+        "bias": [biases.NoBias()],
+    }
 
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 
 def create_input_filepathbase(args):
-    return '{}/{}'.format(args.input_dir, args.filebase)
+    return "{}/{}".format(args.input_dir, args.filebase)
 
 
 def create_output_filepathbase(args):
-    return '{}/{}'.format(args.output_dir, args.filebase)
+    return "{}/{}".format(args.output_dir, args.filebase)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("system_filename", type=str, help="System file")
+    parser.add_argument("filebase", type=str, help="Base name for files")
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("staple_m", type=float, help="Staple molarity (mol/V)")
+    parser.add_argument("stack_ene", type=float, help="Stacking energy (kb K)")
     parser.add_argument(
-        'system_filename',
-        type=str,
-        help='System file')
-    parser.add_argument(
-        'filebase',
-        type=str,
-        help='Base name for files')
-    parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
-    parser.add_argument(
-        'staple_m',
-        type=float,
-        help='Staple molarity (mol/V)')
-    parser.add_argument(
-        'stack_ene',
-        type=float,
-        help='Stacking energy (kb K)')
-    parser.add_argument(
-        'fully_stacked_pairs',
+        "fully_stacked_pairs",
         type=int,
-        help='Number of stacked pairs in fully stacked state')
+        help="Number of stacked pairs in fully stacked state",
+    )
     parser.add_argument(
-        'prod_steps',
+        "prod_steps",
         type=int,
-        help='Minimum number of steps to run after fully stacked states sampled')
+        help="Minimum number of steps to run after fully stacked states sampled",
+    )
     parser.add_argument(
-        '--reps',
-        nargs='+',
-        type=int,
-        help='Reps (leave empty for all available)')
+        "--reps", nargs="+", type=int, help="Reps (leave empty for all available)"
+    )
+    parser.add_argument("--temps", nargs="+", type=str, help="Temperatures")
     parser.add_argument(
-        '--temps',
-        nargs='+',
-        type=str,
-        help='Temperatures')
-    parser.add_argument(
-        '--stack_mults',
-        nargs='+',
-        type=float,
-        help='Stacking energy multipliers')
+        "--stack_mults", nargs="+", type=float, help="Stacking energy multipliers"
+    )
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

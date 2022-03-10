@@ -111,13 +111,12 @@ def rotate_vectors_quarter(vectors, rotation_axis, direction):
     return rotated_vectors
 
 
-
 def calc_reduced_potentials(enes, ops, num_staples, conditions):
     """Reduced potentials as defined in shirts2008."""
     bias_collection = conditions.total_bias(ops)
-    e = (enes.enthalpies + enes.stacking_energies + bias_collection)
-    G = (conditions.reduced_staple_us*num_staples._data[1:].T).sum(axis=1)
-    renes = e/float(conditions.temp)
+    e = enes.enthalpies + enes.stacking_energies + bias_collection
+    G = (conditions.reduced_staple_us * num_staples._data[1:].T).sum(axis=1)
+    renes = e / float(conditions.temp)
 
     return renes - enes.entropies + G
 
@@ -137,11 +136,11 @@ def calc_num_scaffold_domains(system_file):
 def estimate_melting_points(unittypes, aves, temps, tagbase):
     melting_points = []
     offset = 0
-    if 'staple' in tagbase:
+    if "staple" in tagbase:
         offset = 1
 
     for unit_i in range(offset, unittypes + offset):
-        tag = f'{tagbase}{unit_i}'
+        tag = f"{tagbase}{unit_i}"
         ave_states = aves[tag]
         if ave_states.iloc[-1] >= 0.5:
             mp = np.NaN
@@ -154,11 +153,11 @@ def estimate_melting_points(unittypes, aves, temps, tagbase):
 
 
 def estimate_staple_melting_points(stapletypes, aves, temps):
-    return estimate_melting_points(stapletypes, aves, temps, 'staplestates')
+    return estimate_melting_points(stapletypes, aves, temps, "staplestates")
 
 
 def estimate_domain_melting_points(scaffolddomains, aves, temps):
-    return estimate_melting_points(scaffolddomains, aves, temps, 'domainstate')
+    return estimate_melting_points(scaffolddomains, aves, temps, "domainstate")
 
 
 def fill_assembled_shape_array(flat_array, index_to_unittype):

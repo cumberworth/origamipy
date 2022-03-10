@@ -10,11 +10,12 @@ class EnumerationWeights:
 
     @classmethod
     def _read_weights_from_file(cls, filename):
-        data = pd.read_csv(filename, sep='\s|\)\s', header=None, skiprows=1,
-                           engine='python')
-        data[0] = data[0].str.lstrip('(').astype(int)
+        data = pd.read_csv(
+            filename, sep="\s|\)\s", header=None, skiprows=1, engine="python"
+        )
+        data[0] = data[0].str.lstrip("(").astype(int)
         tags = cls._get_tags(filename)
-        tags.append('weight')
+        tags.append("weight")
         data.columns = tags
         tags.pop()
         return tags, data
@@ -24,7 +25,7 @@ class EnumerationWeights:
         tags = []
         with open(filename) as f:
             tags = f.readline().rstrip().split()
-            tags = [tag.rstrip(',') for tag in tags]
+            tags = [tag.rstrip(",") for tag in tags]
 
         return tags
 
@@ -32,14 +33,14 @@ class EnumerationWeights:
         means = []
         for tag in self._tags:
             weights = self._marginalize(tag)
-            means.append((weights.index*weights).sum())
+            means.append((weights.index * weights).sum())
 
         return means
 
     def calc_1d_lfes(self, ops, tag):
         lfes = []
         for op in ops:
-            w = self._dataframe[self._dataframe[tag] == op]['weight'].sum()
+            w = self._dataframe[self._dataframe[tag] == op]["weight"].sum()
             lfes.append(-np.log(w))
 
         lfes = np.array(lfes)
@@ -54,7 +55,7 @@ class EnumerationWeights:
         return list(range(min_op, max_op + 1))
 
     def _marginalize(self, tag):
-        return self._dataframe.groupby(tag)['weight'].sum()
+        return self._dataframe.groupby(tag)["weight"].sum()
 
     @property
     def tags(self):
@@ -63,6 +64,7 @@ class EnumerationWeights:
 
 class OutputData:
     """Base class for output datatypes"""
+
     @classmethod
     def from_file(cls, filebase):
         filename = cls._create_filename(filebase)
@@ -74,18 +76,19 @@ class OutputData:
 
     @classmethod
     def _create_filename(cls, filebase):
-        return '{}.{}'.format(filebase, cls._ext)
+        return "{}.{}".format(filebase, cls._ext)
 
     @classmethod
     def _load_file(cls, filename):
-        data = np.loadtxt(filename, skiprows=cls._header_lines,
-                          dtype=cls._dtype, ndmin=2)
+        data = np.loadtxt(
+            filename, skiprows=cls._header_lines, dtype=cls._dtype, ndmin=2
+        )
         return data.transpose()
 
     @classmethod
     def _get_header(cls, filename):
         if cls._header_lines == 0:
-            return ''
+            return ""
 
         with open(filename) as f:
             return f.readline()
@@ -93,7 +96,7 @@ class OutputData:
     @classmethod
     def _get_tags(cls, header, **kwargs):
         tags = header.rstrip().split()
-        tags = [tag.rstrip(',') for tag in tags]
+        tags = [tag.rstrip(",") for tag in tags]
 
         return tags
 
@@ -145,12 +148,17 @@ class OutputData:
         self._data[index] = value
 
     def to_file(self, filebase):
-        filename = '{}.{}'.format(filebase, self._ext)
+        filename = "{}.{}".format(filebase, self._ext)
         if self._header_lines != 0:
-            self._header = ', '.join(self._tags)
+            self._header = ", ".join(self._tags)
 
-        np.savetxt(filename, self._data.T, header=self._header.rstrip('\n'),
-                comments='', fmt=self._fmt)
+        np.savetxt(
+            filename,
+            self._data.T,
+            header=self._header.rstrip("\n"),
+            comments="",
+            fmt=self._fmt,
+        )
 
     def apply_mask(self, mask):
         self._data = self._data.T[mask].T
@@ -160,11 +168,12 @@ class OutputData:
         self._tag_to_index = {tag: i for i, tag in enumerate(self._tags)}
         self._data = np.concatenate([self._data, [data]])
 
+
 class Energies(OutputData):
-    _ext = 'ene'
+    _ext = "ene"
     _header_lines = 1
     _dtype = np.float
-    _fmt = '%f'
+    _fmt = "%f"
 
     @classmethod
     def from_file(cls, filebase, temp):
@@ -175,14 +184,12 @@ class Energies(OutputData):
     def __init__(self, header, tags, data):
         super().__init__(header, tags, data)
 
-
     def _multiply_energy_by_temp(self, temp):
 
         # Energy are written in units of be k_b / K
-        self['tenergy'] = self['tenergy']*temp
-        self['henthalpy'] = self['henthalpy']*temp
-        self['stacking'] = self['stacking']*temp
-
+        self["tenergy"] = self["tenergy"] * temp
+        self["henthalpy"] = self["henthalpy"] * temp
+        self["stacking"] = self["stacking"] * temp
 
     def to_file(self, filebase, temp):
         self._divide_energy_by_temp(temp)
@@ -191,77 +198,78 @@ class Energies(OutputData):
     def _divide_energy_by_temp(self, temp):
 
         # Energy are written in units of be k_b / K
-        self['tenergy'] = self['tenergy']/temp
-        self['henthalpy'] = self['henthalpy']/temp
-        self['stacking'] = self['stacking']/temp
+        self["tenergy"] = self["tenergy"] / temp
+        self["henthalpy"] = self["henthalpy"] / temp
+        self["stacking"] = self["stacking"] / temp
 
     @property
     def total_energies(self):
-        return self['tenergy']
+        return self["tenergy"]
 
     @property
     def enthalpies(self):
-        return self['henthalpy']
+        return self["henthalpy"]
 
     @property
     def entropies(self):
-        return self['hentropy']
+        return self["hentropy"]
 
     @property
     def stacking_energies(self):
-        return self['stacking']
+        return self["stacking"]
 
     @property
     def bias_energies(self):
-        return self['bias']
+        return self["bias"]
+
 
 class OrderParams(OutputData):
-    _ext = 'ops'
+    _ext = "ops"
     _header_lines = 1
     _dtype = np.int
-    _fmt = '%d'
+    _fmt = "%d"
 
     @classmethod
     def _get_tags(cls, header, **kwargs):
         tags = super()._get_tags(header)
-        if 'step' not in tags:
-            tags.insert(0, 'step')
+        if "step" not in tags:
+            tags.insert(0, "step")
 
         return tags
 
 
 class Times(OutputData):
-    _ext = 'times'
+    _ext = "times"
     _header_lines = 1
     _dtype = np.float
-    _fmt = '%f'
+    _fmt = "%f"
 
 
 class NumStaplesOfType(OutputData):
-    _ext = 'staples'
+    _ext = "staples"
     _header_lines = 0
     _dtype = np.int
-    _fmt = '%d'
+    _fmt = "%d"
 
     @classmethod
     def _get_tags(cls, *args, data=None):
-        tags = ['step']
+        tags = ["step"]
         for i in range(1, data.shape[0]):
-            tags.append('staples{}'.format(i))
+            tags.append("staples{}".format(i))
 
         return tags
 
 
 class StapleTypeStates(OutputData):
-    _ext = 'staplestates'
+    _ext = "staplestates"
     _header_lines = 0
     _dtype = np.int
-    _fmt = '%d'
+    _fmt = "%d"
 
     @classmethod
     def _get_tags(cls, *args, data=None):
-        tags = ['step']
+        tags = ["step"]
         for i in range(1, data.shape[0]):
-            tags.append('staplestates{}'.format(i))
+            tags.append("staplestates{}".format(i))
 
         return tags

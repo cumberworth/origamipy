@@ -15,8 +15,17 @@ def main():
     remc.deconvolute_remc_outputs(all_params, fileinfo, FILETYPES)
 
 
-FILETYPES = ['ene', 'ops', 'trj', 'vcf', 'times', 'ores', 'states', 'staples',
-             'staplestates']
+FILETYPES = [
+    "ene",
+    "ops",
+    "trj",
+    "vcf",
+    "times",
+    "ores",
+    "states",
+    "staples",
+    "staplestates",
+]
 
 
 def create_exchange_params(temps):
@@ -32,28 +41,15 @@ def create_exchange_params(temps):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-            'inputdir',
-            type=str,
-            help='Input file directory')
-    parser.add_argument(
-            'outputdir',
-            type=str,
-            help='Output file directory')
-    parser.add_argument(
-            'filebase',
-            type=str,
-            help='Base name for files')
-    parser.add_argument(
-            '--temps',
-            nargs='+',
-            type=str,
-            help='Temperatures')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("inputdir", type=str, help="Input file directory")
+    parser.add_argument("outputdir", type=str, help="Output file directory")
+    parser.add_argument("filebase", type=str, help="Base name for files")
+    parser.add_argument("--temps", nargs="+", type=str, help="Temperatures")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

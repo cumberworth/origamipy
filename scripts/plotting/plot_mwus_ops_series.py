@@ -20,45 +20,42 @@ from origamipy import us_process
 def main():
     args = parse_args()
     skip = 1
-    out_filebase = '{}/{}-{}_run-{}_iter-{}_timeseries'.format(
-        args.output_dir, args.system, args.vari, args.run, args.itr)
-    tags = ['numstaples', 'numfulldomains', 'nummisdomains', 'numstackedpairs']
-    labels = [
-        'Bound staples',
-        'Bound domains',
-        'Misbound domains',
-        'Stacked pairs']
+    out_filebase = "{}/{}-{}_run-{}_iter-{}_timeseries".format(
+        args.output_dir, args.system, args.vari, args.run, args.itr
+    )
+    tags = ["numstaples", "numfulldomains", "nummisdomains", "numstackedpairs"]
+    labels = ["Bound staples", "Bound domains", "Misbound domains", "Stacked pairs"]
     bias_tags, windows = us_process.read_windows_file(args.windows_filename)
-    figsize = (plot.cm_to_inches(18), plot.cm_to_inches(36*len(windows)))
+    figsize = (plot.cm_to_inches(18), plot.cm_to_inches(36 * len(windows)))
     plot.set_default_appearance()
-    f, axes = plt.subplots(3*len(windows), 1, figsize=figsize, dpi=300)
+    f, axes = plt.subplots(3 * len(windows), 1, figsize=figsize, dpi=300)
 
     ax_i = -1
     for window in windows:
         for rep in range(args.reps):
             ax_i += 1
             ax = axes[ax_i]
-            ax.set_xlabel('Walltime / s')
+            ax.set_xlabel("Walltime / s")
             timeseries = {}
             times = []
             for tag in tags:
                 timeseries[tag] = []
 
             # Create window file postfix
-            postfix = '_win'
+            postfix = "_win"
             for win_min in window[0]:
-                postfix += '-' + str(win_min)
+                postfix += "-" + str(win_min)
 
-            postfix += '-'
+            postfix += "-"
             for win_max in window[1]:
-                postfix += '-' + str(win_max)
+                postfix += "-" + str(win_max)
 
-            filebase = '{}/{}-{}_run-{}_rep-{}{}_iter-{}'.format(
-                args.input_dir, args.system, args.vari, args.run, rep, postfix,
-                args.itr)
-            ops_filename = '{}.ops'.format(filebase)
+            filebase = "{}/{}-{}_run-{}_rep-{}{}_iter-{}".format(
+                args.input_dir, args.system, args.vari, args.run, rep, postfix, args.itr
+            )
+            ops_filename = "{}.ops".format(filebase)
             ops = read_ops_from_file(ops_filename, tags, skip)
-            times_filename = '{}.times'.format(filebase)
+            times_filename = "{}.times".format(filebase)
             times = np.loadtxt(times_filename, skiprows=1)[::skip, 1]
 
             # Times are messed up for PTMWUS so just do the steps for now
@@ -69,24 +66,30 @@ def main():
 
             # Plot timeseries
             for i, tag in enumerate(tags):
-                ax.plot(times, timeseries[tag], marker=None, label=labels[i],
-                        color='C{}'.format(i), zorder=4-i)
+                ax.plot(
+                    times,
+                    timeseries[tag],
+                    marker=None,
+                    label=labels[i],
+                    color="C{}".format(i),
+                    zorder=4 - i,
+                )
 
             # Plot expected value
             for i, tag in enumerate(tags):
                 if args.assembled_values[i] != 0:
-                    ax.axhline(
-                        args.assembled_values[i], linestyle='--', color=f'C{i}')
+                    ax.axhline(args.assembled_values[i], linestyle="--", color=f"C{i}")
 
     # Plot legend
     ax = axes[0]
     handles, labels = ax.get_legend_handles_labels()
-    lgd = ax.legend(handles, labels, frameon=False, loc='center',
-                    bbox_to_anchor=(0.7, 0.25))
+    lgd = ax.legend(
+        handles, labels, frameon=False, loc="center", bbox_to_anchor=(0.7, 0.25)
+    )
 
     plt.tight_layout(pad=0.5, h_pad=0, w_pad=0)
-    f.savefig('{}.pdf'.format(out_filebase), transparent=True)
-    f.savefig('{}.png'.format(out_filebase), transparent=True)
+    f.savefig("{}.pdf".format(out_filebase), transparent=True)
+    f.savefig("{}.png".format(out_filebase), transparent=True)
 
 
 def read_ops_from_file(filename, tags, skip):
@@ -95,7 +98,7 @@ def read_ops_from_file(filename, tags, skip):
     Returns a dictionary of tags to values.
     """
     with open(filename) as inp:
-        header = inp.readline().split(', ')
+        header = inp.readline().split(", ")
 
     all_ops = np.loadtxt(filename, skiprows=1, dtype=int)[::skip]
     ops = {}
@@ -108,49 +111,25 @@ def read_ops_from_file(filename, tags, skip):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("output_dir", type=str, help="Output directory")
+    parser.add_argument("windows_filename", type=str, help="Windows filename")
+    parser.add_argument("system", type=str, help="System")
+    parser.add_argument("vari", type=str, help="Simulation variant")
+    parser.add_argument("reps", type=int, help="Number of reps")
+    parser.add_argument("run", type=int, help="Number of reps")
+    parser.add_argument("itr", type=int, help="US iteration")
     parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
-    parser.add_argument(
-        'output_dir',
-        type=str,
-        help='Output directory')
-    parser.add_argument(
-        'windows_filename',
-        type=str,
-        help='Windows filename')
-    parser.add_argument(
-        'system',
-        type=str,
-        help='System')
-    parser.add_argument(
-        'vari',
-        type=str,
-        help='Simulation variant')
-    parser.add_argument(
-        'reps',
+        "--assembled_values",
+        nargs="+",
         type=int,
-        help='Number of reps')
-    parser.add_argument(
-        'run',
-        type=int,
-        help='Number of reps')
-    parser.add_argument(
-        'itr',
-        type=int,
-        help='US iteration')
-    parser.add_argument(
-        '--assembled_values',
-        nargs='+',
-        type=int,
-        help='Bound staples bound domains misbound domains '
-        'fully stacked pairs')
+        help="Bound staples bound domains misbound domains " "fully stacked pairs",
+    )
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -20,7 +20,7 @@ def calc_pmf(weights):
         if weight != 0:
             pmfs.append(np.log(max_weight / weight))
         else:
-            pmfs.append('nan')
+            pmfs.append("nan")
 
     return pmfs
 
@@ -43,7 +43,7 @@ def calc_pmf_with_stds(weights, weight_stds):
             e = np.sqrt(e1**2 + e2**2)
             pmf_stds.append(e)
         else:
-            pmfs.append('nan')
-            pmf_stds.append('nan')
+            pmfs.append("nan")
+            pmf_stds.append("nan")
 
     return pmfs, pmf_stds

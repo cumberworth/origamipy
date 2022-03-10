@@ -5,7 +5,7 @@ import json
 import numpy as np
 
 
-STACK_TAG = 'numstackedpairs'
+STACK_TAG = "numstackedpairs"
 
 
 class NoBias:
@@ -24,8 +24,8 @@ class StackingBias:
         self._complementary_stack_mult = 1 - float(stack_mult)
 
     def __call__(self, order_params):
-        total_stack_energy = order_params[STACK_TAG]*self._stack_energy
-        return -total_stack_energy*self._complementary_stack_mult
+        total_stack_energy = order_params[STACK_TAG] * self._stack_energy
+        return -total_stack_energy * self._complementary_stack_mult
 
     @property
     def fileformat_value(self):
@@ -38,6 +38,7 @@ class GridBias:
     It assumes that the input bias is desired, not the bias calculated for that
     iteration.
     """
+
     def __init__(self, tags, window, min_outside_bias, slope, temp, inp_filebase, itr):
         self._tags = tags
         self._window = window
@@ -46,24 +47,23 @@ class GridBias:
         self._temp = temp
 
         # Create window file postfix
-        self._postfix = '_win'
+        self._postfix = "_win"
         for win_min in window[0]:
-            self._postfix += '-' + str(win_min)
+            self._postfix += "-" + str(win_min)
 
-        self._postfix += '-'
+        self._postfix += "-"
         for win_max in window[1]:
-            self._postfix += '-' + str(win_max)
-        
+            self._postfix += "-" + str(win_max)
+
         # Read biases from file
-        self._postfix += f'_iter-{itr}'
-        filename = f'{inp_filebase}{self._postfix}-inp.biases'
+        self._postfix += f"_iter-{itr}"
+        filename = f"{inp_filebase}{self._postfix}-inp.biases"
         grid_biases = json.load(open(filename))
         self._grid_biases = {}
-        for entry in grid_biases['biases']:
-            point = tuple(entry['point'])
-            bias = entry['bias']
+        for entry in grid_biases["biases"]:
+            point = tuple(entry["point"])
+            bias = entry["bias"]
             self._grid_biases[point] = bias
-
 
     def __call__(self, order_params):
         biases = []
@@ -81,14 +81,14 @@ class GridBias:
                 max_param = self._window[1][i]
                 if param < min_param:
                     bias += self._slope * (min_param - param - 1)
-                    bias += self._min_outside_bias;
+                    bias += self._min_outside_bias
                 elif param > max_param:
                     bias = self._slope * (param - max_param - 1)
-                    bias += self._min_outside_bias;
+                    bias += self._min_outside_bias
 
             biases.append(bias)
 
-        return np.array(biases) * self._temp;
+        return np.array(biases) * self._temp
 
     @property
     def fileformat_value(self):

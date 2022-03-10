@@ -11,7 +11,8 @@ from origamipy import us_process
 
 
 ConditionsFileformatSpec = collections.namedtuple(
-    'ConditionFileformatSpec', ['condition', 'spec'])
+    "ConditionFileformatSpec", ["condition", "spec"]
+)
 
 
 class ConditionsFileformatter:
@@ -23,14 +24,14 @@ class ConditionsFileformatter:
         fileformat_elements = []
         for condition, spec in self._spec:
             condition_value = cur_conditions[condition]
-            if 'bias' in condition:
+            if "bias" in condition:
                 condition_value = condition_value.fileformat_value
 
             fileformat_elements.append(spec.format(condition_value))
 
-        file_elements = '-'.join(fileformat_elements)
-        if 'bias' not in self._spec[0].condition:
-            file_elements = '-' + file_elements
+        file_elements = "-".join(fileformat_elements)
+        if "bias" not in self._spec[0].condition:
+            file_elements = "-" + file_elements
 
         return file_elements
 
@@ -42,10 +43,10 @@ class SimConditions:
         self._total_bias = None
 
         self._construct_total_bias()
-        self._u_extra_states_term = (2*staple_lengths - 1)*np.log(6)
+        self._u_extra_states_term = (2 * staple_lengths - 1) * np.log(6)
 
     def _construct_total_bias(self):
-        bs = [v for k, v in self._conditions.items() if 'bias' in k]
+        bs = [v for k, v in self._conditions.items() if "bias" in k]
         self._total_bias = biases.TotalBias(bs)
 
     def __getitem__(self, key):
@@ -53,15 +54,15 @@ class SimConditions:
 
     @property
     def temp(self):
-        return self['temp']
+        return self["temp"]
 
     @property
     def staple_m(self):
-        return self['staple_m']
+        return self["staple_m"]
 
     @property
     def reduced_staple_us(self):
-        return np.log(self['staple_m']) - self._u_extra_states_term
+        return np.log(self["staple_m"]) - self._u_extra_states_term
 
     @property
     def total_bias(self):
@@ -79,7 +80,7 @@ class SimConditions:
     def characteristic_values(self):
         char_values = []
         for key, value in sorted(self._conditions.items()):
-            if 'bias' in key:
+            if "bias" in key:
                 value = value.fileformat_value
 
             char_values.append(value)
@@ -90,7 +91,7 @@ class SimConditions:
     def condition_to_characteristic_value(self):
         condition_to_char_value = {}
         for key, value in sorted(self._conditions.items()):
-            if 'bias' in key:
+            if "bias" in key:
                 value = value.fileformat_value
 
             condition_to_char_value[key] = value
@@ -101,8 +102,9 @@ class SimConditions:
 class AllSimConditions:
     """All combinations of given simulation conditions."""
 
-    def __init__(self, conditions_keys, conditions_values, fileformatter,
-                 staple_lengths):
+    def __init__(
+        self, conditions_keys, conditions_values, fileformatter, staple_lengths
+    ):
         self._conditions_keys = conditions_keys
         self._conditions_values = conditions_values
         self._fileformatter = fileformatter
@@ -151,53 +153,66 @@ class AllSimConditions:
 
 
 def construct_remc_conditions(temps, staple_m, fileformatter, staple_lengths):
-    conditions_keys = ['temp', 'staple_m', 'bias']
+    conditions_keys = ["temp", "staple_m", "bias"]
     conditions_values = [temps, [staple_m], [biases.NoBias()]]
 
-    return AllSimConditions(conditions_keys, [conditions_values], fileformatter, staple_lengths)
+    return AllSimConditions(
+        conditions_keys, [conditions_values], fileformatter, staple_lengths
+    )
 
 
 # I don't like how many arguemnts this requires, but I don't know how else to
 # organize it
 def construct_mwus_conditions(
-        windows_filename, bias_functions_filename, reps, start_run, temp, itr,
-        staple_m, fileformatter, inp_filebase, staple_lengths, concatenate):
+    windows_filename,
+    bias_functions_filename,
+    reps,
+    start_run,
+    temp,
+    itr,
+    staple_m,
+    fileformatter,
+    inp_filebase,
+    staple_lengths,
+    concatenate,
+):
 
     bias_tags, windows = us_process.read_windows_file(windows_filename)
     bias_functions = json.load(open(bias_functions_filename))
-    op_tags = us_process.get_op_tags_from_bias_functions(
-        bias_functions, bias_tags)
+    op_tags = us_process.get_op_tags_from_bias_functions(bias_functions, bias_tags)
 
     # Linear square well functions are all the same
-    for bias_function in bias_functions['origami']['bias_functions']:
-        if bias_function['type'] == 'LinearStepWell':
-            slope = bias_function['slope']
-            min_outside_bias = bias_function['min_bias']
+    for bias_function in bias_functions["origami"]["bias_functions"]:
+        if bias_function["type"] == "LinearStepWell":
+            slope = bias_function["slope"]
+            min_outside_bias = bias_function["min_bias"]
             break
 
-    conditions_keys = ['temp', 'staple_m', 'bias']
+    conditions_keys = ["temp", "staple_m", "bias"]
     conditions_valuesl = []
     for rep in range(reps):
         grid_biases = []
         for window in windows:
-            filebase = '{}_run-{}_rep-{}'.format(
-                inp_filebase, start_run, rep)
+            filebase = "{}_run-{}_rep-{}".format(inp_filebase, start_run, rep)
             grid_biases.append(
                 biases.GridBias(
-                    op_tags, window, min_outside_bias, slope, temp,
-                    filebase, itr))
+                    op_tags, window, min_outside_bias, slope, temp, filebase, itr
+                )
+            )
 
         conditions_valuesl.append([[temp], [staple_m], grid_biases])
 
     if concatenate:
         return AllSimConditions(
-            conditions_keys, conditions_valuesl, fileformatter,
-            staple_lengths)
+            conditions_keys, conditions_valuesl, fileformatter, staple_lengths
+        )
     else:
         reps_conditions = []
         for conditions_values in conditions_valuesl:
-            reps_conditions.append(AllSimConditions(
-                conditions_keys, [conditions_values], fileformatter,
-                staple_lengths))
+            reps_conditions.append(
+                AllSimConditions(
+                    conditions_keys, [conditions_values], fileformatter, staple_lengths
+                )
+            )
 
         return reps_conditions

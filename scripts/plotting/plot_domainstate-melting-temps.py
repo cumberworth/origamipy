@@ -22,7 +22,7 @@ def main():
     ax = f.add_subplot(gs[0])
     plot_figure(f, ax, vars(args))
     setup_axis(ax)
-    plot_filebase = f'{args.plot_dir}/{args.filebase}_domainstate-melting'
+    plot_filebase = f"{args.plot_dir}/{args.filebase}_domainstate-melting"
     save_figure(f, plot_filebase)
 
 
@@ -34,22 +34,23 @@ def setup_figure():
 
 
 def plot_figure(f, ax, args):
-    input_dir = args['input_dir']
-    filebase = args['filebase']
-    scaffold_domains = args['scaffolddomains']
-    mapfile = args['mapfile']
-    rtag = args['rtag']
-    rvalue = args['rvalue']
+    input_dir = args["input_dir"]
+    filebase = args["filebase"]
+    scaffold_domains = args["scaffolddomains"]
+    mapfile = args["mapfile"]
+    rtag = args["rtag"]
+    rvalue = args["rvalue"]
 
-    inp_filebase = f'{input_dir}/{filebase}'
+    inp_filebase = f"{input_dir}/{filebase}"
     index_to_domaintype = np.loadtxt(mapfile, dtype=int)
     aves, stds = plot.read_expectations(inp_filebase)
-    temps = aves['temp']
+    temps = aves["temp"]
     melting_points = utility.estimate_domain_melting_points(
-        scaffolddomains, aves, temps)
+        scaffolddomains, aves, temps
+    )
     min_t = np.min(melting_points)
     max_t = np.max(melting_points)
-    cmap = cm.get_cmap('viridis')
+    cmap = cm.get_cmap("viridis")
     mappable = plotutils.create_linear_mappable(cmap, min_t, max_t)
     if rtag:
         aves = aves[aves[rtag] == rvalue]
@@ -64,54 +65,35 @@ def plot_figure(f, ax, args):
 
     # Plot simulation melting points
     im = ax.imshow(assembled_array, vmin=min_t, vmax=max_t)
-    plt.colorbar(im, orientation='horizontal')
+    plt.colorbar(im, orientation="horizontal")
 
 
 def setup_axis(ax):
-    ax.axis('off')
+    ax.axis("off")
 
 
 def save_figure(f, plot_filebase):
     # f.savefig(plot_filebase + '.pgf', transparent=True)
-    f.savefig(plot_filebase + '.pdf', transparent=True)
-    f.savefig(plot_filebase + '.png', transparent=True)
+    f.savefig(plot_filebase + ".pdf", transparent=True)
+    f.savefig(plot_filebase + ".png", transparent=True)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("plot_dir", type=str, help="Plot directory")
+    parser.add_argument("filebase", type=str, help="Filebase")
     parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
-    parser.add_argument(
-        'plot_dir',
-        type=str,
-        help='Plot directory')
-    parser.add_argument(
-        'filebase',
-        type=str,
-        help='Filebase')
-    parser.add_argument(
-        'scaffolddomains',
-        type=int,
-        help='Number of scaffold binding domains')
-    parser.add_argument(
-        'mapfile',
-        type=str,
-        help='Index-to-domain type map filename')
-    parser.add_argument(
-        '--rtag',
-        type=str,
-        help='Tag to slice on')
-    parser.add_argument(
-        '--rvalue',
-        type=float,
-        help='Slice value')
+        "scaffolddomains", type=int, help="Number of scaffold binding domains"
+    )
+    parser.add_argument("mapfile", type=str, help="Index-to-domain type map filename")
+    parser.add_argument("--rtag", type=str, help="Tag to slice on")
+    parser.add_argument("--rvalue", type=float, help="Slice value")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

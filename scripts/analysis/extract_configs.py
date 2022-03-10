@@ -20,10 +20,11 @@ def main():
     fileformatter = construct_fileformatter()
     all_conditions = construct_conditions(args, fileformatter, system_file)
     inp_filebase = create_input_filepathbase(args)
-    sim_collections = outputs.create_sim_collections(inp_filebase,
-                                                     all_conditions, args.reps)
+    sim_collections = outputs.create_sim_collections(
+        inp_filebase, all_conditions, args.reps
+    )
     for sim_collection in sim_collections:
-        ops_series_runs = sim_collection.get_reps_data('ops')
+        ops_series_runs = sim_collection.get_reps_data("ops")
         filtered_steps = []
         for ops_series in ops_series_runs:
             if ops_series == 0:
@@ -44,8 +45,8 @@ def main():
 
 def construct_fileformatter():
     specs = []
-    specs.append(conditions.ConditionsFileformatSpec('temp', '{:d}'))
-    specs.append(conditions.ConditionsFileformatSpec('bias', '{:.1f}'))
+    specs.append(conditions.ConditionsFileformatSpec("temp", "{:d}"))
+    specs.append(conditions.ConditionsFileformatSpec("bias", "{:.1f}"))
 
     return conditions.ConditionsFileformatter(specs)
 
@@ -56,77 +57,52 @@ def construct_conditions(args, fileformatter, system_file):
         stack_bias = biases.StackingBias(args.stack_ene, stack_mult)
         stack_biases.append(stack_bias)
 
-    conditions_map = {'temp': args.temps,
-                      'staple_m': [args.staple_m],
-                      'bias': stack_biases}
+    conditions_map = {
+        "temp": args.temps,
+        "staple_m": [args.staple_m],
+        "bias": stack_biases,
+    }
 
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 
 def create_input_filepathbase(args):
-    return '{}/{}'.format(args.input_dir, args.filebase)
+    return "{}/{}".format(args.input_dir, args.filebase)
 
 
 def create_output_filepathbase(args):
-    return '{}/{}'.format(args.output_dir, args.filebase)
+    return "{}/{}".format(args.output_dir, args.filebase)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("system_filename", type=str, help="System file")
+    parser.add_argument("filebase", type=str, help="Base name for files")
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("output_dir", type=str, help="Directory to output to")
+    parser.add_argument("staple_m", type=float, help="Staple molarity (mol/V)")
+    parser.add_argument("stack_ene", type=float, help="Stacking energy (kb K)")
     parser.add_argument(
-        'system_filename',
-        type=str,
-        help='System file')
+        "--reps", nargs="+", type=int, help="Reps (leave empty for all available)"
+    )
+    parser.add_argument("--temps", nargs="+", type=int, help="Temperatures")
     parser.add_argument(
-        'filebase',
-        type=str,
-        help='Base name for files')
+        "--stack_mults", nargs="+", type=float, help="Stacking energy multipliers"
+    )
     parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
+        "--tags", type=str, nargs="+", help="List of order parameter tags"
+    )
     parser.add_argument(
-        'output_dir',
-        type=str,
-        help='Directory to output to')
-    parser.add_argument(
-        'staple_m',
-        type=float,
-        help='Staple molarity (mol/V)')
-    parser.add_argument(
-        'stack_ene',
-        type=float,
-        help='Stacking energy (kb K)')
-    parser.add_argument(
-        '--reps',
-        nargs='+',
+        "--values",
         type=int,
-        help='Reps (leave empty for all available)')
-    parser.add_argument(
-        '--temps',
-        nargs='+',
-        type=int,
-        help='Temperatures')
-    parser.add_argument(
-        '--stack_mults',
-        nargs='+',
-        type=float,
-        help='Stacking energy multipliers')
-    parser.add_argument(
-        '--tags',
-        type=str,
-        nargs='+',
-        help='List of order parameter tags')
-    parser.add_argument(
-        '--values',
-        type=int,
-        nargs='+',
-        help='List of order parameter values to filter for')
+        nargs="+",
+        help="List of order parameter values to filter for",
+    )
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

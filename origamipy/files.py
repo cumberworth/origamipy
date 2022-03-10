@@ -5,11 +5,10 @@ import json
 
 import numpy as np
 
-NEWLINE = '\n'
+NEWLINE = "\n"
 
 
-FileInfo = collections.namedtuple('FileInfo', ['inputdir', 'outputdir',
-                                               'filebase'])
+FileInfo = collections.namedtuple("FileInfo", ["inputdir", "outputdir", "filebase"])
 
 
 class JSONStructInpFile:
@@ -26,21 +25,21 @@ class JSONStructInpFile:
 
     @property
     def cyclic(self):
-        return self._json_origami['origami']['cyclic']
+        return self._json_origami["origami"]["cyclic"]
 
     @property
     def identities(self):
         """Standard format for passing origami domain identities"""
-        return self._json_origami['origami']['identities']
+        return self._json_origami["origami"]["identities"]
 
     @property
     def sequences(self):
         """Standard format for passing origami domain sequences"""
-        return self._json_origami['origami']['sequences']
+        return self._json_origami["origami"]["sequences"]
 
     def chains(self, step):
         """Standard format for passing chain configuration."""
-        return self._json_origami['origami']['configurations'][step]['chains']
+        return self._json_origami["origami"]["configurations"][step]["chains"]
 
     def close(self):
         pass
@@ -52,28 +51,31 @@ class JSONStructOutFile:
     def __init__(self, filename, origami_system):
         self._filename = filename
 
-        self.json_origami = {'origami': {'identities': {},
-                             'configurations': []}}
-        self.json_origami['origami']['identities'] = origami_system.identities
-#        self.json_origami['origami']['sequences'] = origami_system.sequences
-        self.json_origami['origami']['cyclic'] = origami_system.cyclic
+        self.json_origami = {"origami": {"identities": {}, "configurations": []}}
+        self.json_origami["origami"]["identities"] = origami_system.identities
+        #        self.json_origami['origami']['sequences'] = origami_system.sequences
+        self.json_origami["origami"]["cyclic"] = origami_system.cyclic
 
     def write(self, chains):
-        self.json_origami['origami']['configurations'].append({})
-        current_config = self.json_origami['origami']['configurations'][-1]
+        self.json_origami["origami"]["configurations"].append({})
+        current_config = self.json_origami["origami"]["configurations"][-1]
 
         # Step should probably be changed as this is no longer being used by a
         # a simulation class
-        current_config['step'] = 0
-        current_config['chains'] = chains
-        json.dump(self.json_origami, open(self._filename, 'w'), indent=4,
-                  separators=(',', ': '))
+        current_config["step"] = 0
+        current_config["chains"] = chains
+        json.dump(
+            self.json_origami,
+            open(self._filename, "w"),
+            indent=4,
+            separators=(",", ": "),
+        )
 
 
 class StepsInpFile:
     def __init__(self, filename):
         self._filename = filename
-        self._line = ''
+        self._line = ""
         self._eof = False
         self._step = -1
 
@@ -143,7 +145,7 @@ class TxtTrajInpFile(StepsInpFile):
         self._next_line()
         while chains_remain:
             self._parse_chain()
-            if self._line == '':
+            if self._line == "":
                 chains_remain = False
 
         self._next_line()
@@ -159,11 +161,11 @@ class TxtTrajInpFile(StepsInpFile):
 
     def _parse_chain(self):
         chain = {}
-        chain['index'], chain['identity'] = self._get_index_and_identity()
+        chain["index"], chain["identity"] = self._get_index_and_identity()
         self._next_line()
-        chain['positions'] = self._get_domainsx3_matrix_from_line()
+        chain["positions"] = self._get_domainsx3_matrix_from_line()
         self._next_line()
-        chain['orientations'] = self._get_domainsx3_matrix_from_line()
+        chain["orientations"] = self._get_domainsx3_matrix_from_line()
         self._chains.append(chain)
         self._next_line()
 
@@ -183,74 +185,74 @@ class TxtTrajOutFile:
     """Plain text trajectory output file."""
 
     def __init__(self, filename):
-        self.file = open(filename, 'w')
+        self.file = open(filename, "w")
 
     def write_config(self, chains, step):
-        self.file.write('{}\n'.format(step))
+        self.file.write("{}\n".format(step))
         for chain in chains:
-            self.file.write('{} '.format(chain['index']))
-            self.file.write('{}\n'.format(chain['identity']))
-            for pos in chain['positions']:
+            self.file.write("{} ".format(chain["index"]))
+            self.file.write("{}\n".format(chain["identity"]))
+            for pos in chain["positions"]:
                 for comp in pos:
-                    self.file.write('{} '.format(comp))
-            self.file.write('\n')
-            for ore in chain['orientations']:
+                    self.file.write("{} ".format(comp))
+            self.file.write("\n")
+            for ore in chain["orientations"]:
                 for comp in ore:
-                    self.file.write('{} '.format(comp))
-            self.file.write('\n')
-        self.file.write('\n')
+                    self.file.write("{} ".format(comp))
+            self.file.write("\n")
+        self.file.write("\n")
 
 
 class VCFOutFile:
     """VCF output file."""
 
     def __init__(self, filename, max_staples):
-        self.file = open(filename, 'w')
+        self.file = open(filename, "w")
         self.max_staples = max_staples
 
     def write_config_from_chains(self, chains):
-        self.file.write('timestep\n')
+        self.file.write("timestep\n")
         for chain_i, chain in enumerate(chains):
-            for pos in chain['positions']:
+            for pos in chain["positions"]:
                 for comp in pos:
-                    self.file.write('{} '.format(comp))
-                self.file.write('\n')
+                    self.file.write("{} ".format(comp))
+                self.file.write("\n")
 
         while chain_i != self.max_staples:
             chain_i += 1
             for i in range(2):
-                self.file.write('0 0 0\n')
+                self.file.write("0 0 0\n")
 
-        self.file.write('\n')
+        self.file.write("\n")
 
     def write_config_from_positions(self, all_positions):
-        self.file.write('timestep\n')
+        self.file.write("timestep\n")
         for chain_i, pos in enumerate(all_positions):
             for pos in positions:
                 for comp in pos:
-                    self.file.write('{} '.format(comp))
-                self.file.write('\n')
+                    self.file.write("{} ".format(comp))
+                self.file.write("\n")
 
         while chain_i != self.max_staples:
             chain_i += 1
             for i in range(3):
-                self.file.write('0 0 0\n')
+                self.file.write("0 0 0\n")
 
-        self.file.write('\n')
+        self.file.write("\n")
 
 
 class SwapInpFile(StepsInpFile):
     def __init__(self, inputdir, filebase):
         filename = self._create_filename(inputdir, filebase)
         super().__init__(filename)
-        self._header = ''
+        self._header = ""
         self._threads_to_replicas = []
         # TODO: check if starting at step 0 or 1
 
         self._parse_header()
 
     def _create_filename(self, inputdir, filebase):
-        return '{}/{}.{}'.format(inputdir, filebase, 'swp')
+        return "{}/{}.{}".format(inputdir, filebase, "swp")
 
     def _parse_header(self):
         # TODO: extract the replica parameters
@@ -273,10 +275,11 @@ class SwapInpFile(StepsInpFile):
 
 class UnparsedStepInpFile(StepsInpFile):
     """Read steps in single string chunks."""
+
     def __init__(self, filename, headerlines=0):
         super().__init__(filename)
-        self._header = ''
-        self._step_chunk = ''
+        self._header = ""
+        self._step_chunk = ""
         self._headerlines = headerlines
 
         self._parse_header()
@@ -321,6 +324,7 @@ class UnparsedMultiLineStepInpFile(UnparsedStepInpFile):
     The program's standard delimiter for steps is an empy new line (or a double
     new line.
     """
+
     def _parse_step(self):
         self._step_chunk = self._line
         while self._line != NEWLINE:
@@ -336,6 +340,7 @@ class UnparsedSingleLineStepInpFile(UnparsedStepInpFile):
     The program's standard delimiter for steps is an empy new line (or a double
     new line.
     """
+
     def _parse_step(self):
         self._step_chunk = self._line
         self._next_line()
@@ -346,8 +351,7 @@ class TagOutFile:
         self._filename = filename
 
     def write(self, tags, data):
-        np.savetxt(self._filename, data, header=' '.join(tags), comments='',
-                   fmt='%.6f')
+        np.savetxt(self._filename, data, header=" ".join(tags), comments="", fmt="%.6f")
 
 
 class StatesInpFile(StepsInpFile):

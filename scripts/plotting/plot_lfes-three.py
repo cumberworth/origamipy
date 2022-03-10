@@ -23,11 +23,11 @@ def main():
     ax = f.add_subplot(gs[0, 0])
     axes = [ax, ax.twiny()]
     if args.post_lfes == None:
-        args.post_lfes = ['']*3
+        args.post_lfes = [""] * 3
 
     plot_figure(f, axes, vars(args))
     setup_axis(axes)
-    #set_labels(axes)
+    # set_labels(axes)
     save_figure(f, args.plot_filebase)
 
 
@@ -39,39 +39,35 @@ def setup_figure():
 
 
 def plot_figure(f, axes, args):
-    system = args['system']
-    varis = args['varis']
-    input_dir = args['input_dir']
-    post_lfes = args['post_lfes']
-    tags = ['numstaples', 'numfullyboundstaples', 'numfulldomains']
-    labels = ['Staples', 'Fully bound staples', 'Bound domains']
-    cmap = cm.get_cmap('tab10')
+    system = args["system"]
+    varis = args["varis"]
+    input_dir = args["input_dir"]
+    post_lfes = args["post_lfes"]
+    tags = ["numstaples", "numfullyboundstaples", "numfulldomains"]
+    labels = ["Staples", "Fully bound staples", "Bound domains"]
+    cmap = cm.get_cmap("tab10")
     for i, tag in enumerate(tags):
-        if tag == 'numfulldomains':
+        if tag == "numfulldomains":
             ax = axes[1]
         else:
             ax = axes[0]
 
         vari = varis[i]
         post_lfe = post_lfes[i]
-        if post_lfe != '':
-            post_lfe = '-' + post_lfe
+        if post_lfe != "":
+            post_lfe = "-" + post_lfe
 
-        inp_filebase = f'{input_dir}/{system}-{vari}_lfes{post_lfe}-{tag}'
-        lfes = pd.read_csv(f'{inp_filebase}.aves', sep=' ', index_col=0)
-        lfe_stds = pd.read_csv(f'{inp_filebase}.stds', sep=' ', index_col=0)
+        inp_filebase = f"{input_dir}/{system}-{vari}_lfes{post_lfe}-{tag}"
+        lfes = pd.read_csv(f"{inp_filebase}.aves", sep=" ", index_col=0)
+        lfe_stds = pd.read_csv(f"{inp_filebase}.stds", sep=" ", index_col=0)
         temp = lfes.columns[0]
         lfes = lfes[temp]
         lfes = lfes - lfes[0]
         lfe_stds = lfe_stds[temp]
 
         ax.errorbar(
-            lfes.index,
-            lfes,
-            yerr=lfe_stds,
-            marker='o',
-            label=labels[i],
-            color=cmap(i))
+            lfes.index, lfes, yerr=lfe_stds, marker="o", label=labels[i], color=cmap(i)
+        )
 
 
 def setup_axis(axes, ylabel=None, xlabel_bottom=None, xlabel_top=None):
@@ -91,40 +87,25 @@ def set_labels(ax):
 
 
 def save_figure(f, plot_filebase):
-    #f.savefig(plot_filebase + '.pgf', transparent=True)
-    f.savefig(plot_filebase + '.pdf', transparent=True)
-    f.savefig(plot_filebase + '.png', transparent=True)
+    # f.savefig(plot_filebase + '.pgf', transparent=True)
+    f.savefig(plot_filebase + ".pdf", transparent=True)
+    f.savefig(plot_filebase + ".png", transparent=True)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_dir", type=str, help="Input directory")
+    parser.add_argument("plot_filebase", type=str, help="Plots directory")
+    parser.add_argument("system", type=str, help="System")
+    parser.add_argument("--varis", nargs="+", type=str, help="Simulation variants")
     parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Input directory')
-    parser.add_argument(
-        'plot_filebase',
-        type=str,
-        help='Plots directory')
-    parser.add_argument(
-        'system',
-        type=str,
-        help='System')
-    parser.add_argument(
-        '--varis',
-        nargs='+',
-        type=str,
-        help='Simulation variants')
-    parser.add_argument(
-        '--post_lfes',
-        nargs='+',
-        type=str,
-        help='Filename additions after lfes, if any')
+        "--post_lfes", nargs="+", type=str, help="Filename additions after lfes, if any"
+    )
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

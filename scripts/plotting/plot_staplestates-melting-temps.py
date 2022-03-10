@@ -23,7 +23,7 @@ def main():
     mappable = plot_figure(f, ax, vars(args))
     setup_axis(ax)
     set_labels(f, ax, mappable)
-    plot_filebase = f'{args.plot_dir}/{args.filebase}_staplestates-melting'
+    plot_filebase = f"{args.plot_dir}/{args.filebase}_staplestates-melting"
     save_figure(f, plot_filebase)
 
 
@@ -35,22 +35,21 @@ def setup_figure():
 
 
 def plot_figure(f, ax, args):
-    input_dir = args['input_dir']
-    filebase = args['filebase']
-    stapletypes = args['stapletypes']
-    mapfile = args['mapfile']
-    rtag = args['rtag']
-    rvalue = args['rvalue']
+    input_dir = args["input_dir"]
+    filebase = args["filebase"]
+    stapletypes = args["stapletypes"]
+    mapfile = args["mapfile"]
+    rtag = args["rtag"]
+    rvalue = args["rvalue"]
 
-    inp_filebase = f'{input_dir}/{filebase}'
+    inp_filebase = f"{input_dir}/{filebase}"
     index_to_stapletype = np.loadtxt(mapfile, dtype=int)
     aves, stds = plot.read_expectations(inp_filebase)
-    temps = aves['temp']
-    melting_points = utility.estimate_staple_melting_points(
-        stapletypes, aves, temps)
+    temps = aves["temp"]
+    melting_points = utility.estimate_staple_melting_points(stapletypes, aves, temps)
     min_t = np.min(melting_points)
     max_t = np.max(melting_points)
-    cmap = cm.get_cmap('viridis')
+    cmap = cm.get_cmap("viridis")
     mappable = plotutils.create_linear_mappable(cmap, min_t, max_t)
     if rtag:
         aves = aves[aves[rtag] == rvalue]
@@ -69,54 +68,33 @@ def plot_figure(f, ax, args):
 
 
 def setup_axis(ax):
-    ax.axis('off')
+    ax.axis("off")
 
 
 def set_labels(f, ax, mappable):
-    f.colorbar(mappable, orientation='horizontal')
+    f.colorbar(mappable, orientation="horizontal")
 
 
 def save_figure(f, plot_filebase):
     # f.savefig(plot_filebase + '.pgf', transparent=True)
-    f.savefig(plot_filebase + '.pdf', transparent=True)
-    f.savefig(plot_filebase + '.png', transparent=True)
+    f.savefig(plot_filebase + ".pdf", transparent=True)
+    f.savefig(plot_filebase + ".png", transparent=True)
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        'input_dir',
-        type=str,
-        help='Directory of inputs')
-    parser.add_argument(
-        'plot_dir',
-        type=str,
-        help='Plot directory')
-    parser.add_argument(
-        'filebase',
-        type=str,
-        help='Filebase')
-    parser.add_argument(
-        'stapletypes',
-        type=int,
-        help='Number of staple types')
-    parser.add_argument(
-        'mapfile',
-        type=str,
-        help='Index-to-staple type map filename')
-    parser.add_argument(
-        '--rtag',
-        type=str,
-        help='Tag to slice on')
-    parser.add_argument(
-        '--rvalue',
-        type=float,
-        help='Slice value')
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument("input_dir", type=str, help="Directory of inputs")
+    parser.add_argument("plot_dir", type=str, help="Plot directory")
+    parser.add_argument("filebase", type=str, help="Filebase")
+    parser.add_argument("stapletypes", type=int, help="Number of staple types")
+    parser.add_argument("mapfile", type=str, help="Index-to-staple type map filename")
+    parser.add_argument("--rtag", type=str, help="Tag to slice on")
+    parser.add_argument("--rvalue", type=float, help="Slice value")
 
     return parser.parse_args()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

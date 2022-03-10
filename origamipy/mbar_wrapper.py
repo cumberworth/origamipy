@@ -20,11 +20,12 @@ class MBARWrapper:
     def calc_expectation(self, se_tag, conds):
         """Calculate expectation and std for given op and conditions."""
         series = self._decor_outs.get_concatenated_series(se_tag)
-        decor_enes = self._decor_outs.get_concatenated_datatype('enes')
-        decor_ops = self._decor_outs.get_concatenated_datatype('ops')
-        decor_staples = self._decor_outs.get_concatenated_datatype('staples')
+        decor_enes = self._decor_outs.get_concatenated_datatype("enes")
+        decor_ops = self._decor_outs.get_concatenated_datatype("ops")
+        decor_staples = self._decor_outs.get_concatenated_datatype("staples")
         rpots = utility.calc_reduced_potentials(
-            decor_enes, decor_ops, decor_staples, conds)
+            decor_enes, decor_ops, decor_staples, conds
+        )
         ave, std = self._mbar.computeExpectations(series, rpots)
 
         return ave[0].astype(float), std[0].astype(float)
@@ -60,17 +61,15 @@ class MBARWrapper:
         all_tags = np.concatenate([conds_tags, se_tags])
         all_conds_values = np.array(all_conds_values, dtype=float)
 
-        conds_aves = np.concatenate(
-            [all_conds_values, np.array(all_aves).T], axis=1)
-        aves_file = files.TagOutFile(f'{filebase}.aves')
+        conds_aves = np.concatenate([all_conds_values, np.array(all_aves).T], axis=1)
+        aves_file = files.TagOutFile(f"{filebase}.aves")
         aves_file.write(all_tags, conds_aves)
 
-        conds_stds = np.concatenate(
-            [all_conds_values, np.array(all_stds).T], axis=1)
-        stds_file = files.TagOutFile(f'{filebase}.stds')
+        conds_stds = np.concatenate([all_conds_values, np.array(all_stds).T], axis=1)
+        stds_file = files.TagOutFile(f"{filebase}.stds")
         stds_file.write(all_tags, conds_stds)
 
-    def calc_1d_lfes(self, se_tag, conds, filebase=None, xtag='temp'):
+    def calc_1d_lfes(self, se_tag, conds, filebase=None, xtag="temp"):
         """Calculate 1D LFEs and stds for given op and conditions.
 
         Write both LFEs and standard deviations to file.
@@ -85,16 +84,16 @@ class MBARWrapper:
             conds_tags = all_conds.condition_tags
             xvar = conds[xtag]
 
-            lfes_filebase = f'{filebase}-{se_tag}'
-            lfes_file = files.TagOutFile(f'{lfes_filebase}.aves')
+            lfes_filebase = f"{filebase}-{se_tag}"
+            lfes_file = files.TagOutFile(f"{lfes_filebase}.aves")
             self._write_lfe_series_to_file(lfes_file, header, lfe, bins, 1)
 
-            stds_file = files.TagOutFile(f'{lfes_filebase}.stds')
+            stds_file = files.TagOutFile(f"{lfes_filebase}.stds")
             self._write_lfe_series_to_file(stds_file, header, std, bins, 1)
 
         return lfe, std, bins
 
-    def calc_all_1d_lfes(self, filebase, se_tags, all_conds, xtag='temp'):
+    def calc_all_1d_lfes(self, filebase, se_tags, all_conds, xtag="temp"):
         """Calculate 1D LFEs for given ops and conditions.
 
         Write both LFEs and standard deviations to file.
@@ -117,12 +116,12 @@ class MBARWrapper:
                 stds.append(std)
 
             header = np.concatenate([[se_tag], xvars])
-            lfes_filebase = f'{filebase}-{se_tag}'
+            lfes_filebase = f"{filebase}-{se_tag}"
 
-            lfes_file = files.TagOutFile(f'{lfes_filebase}.aves')
+            lfes_file = files.TagOutFile(f"{lfes_filebase}.aves")
             self._write_lfe_series_to_file(lfes_file, header, lfes, bins, 1)
 
-            stds_file = files.TagOutFile(f'{lfes_filebase}.stds')
+            stds_file = files.TagOutFile(f"{lfes_filebase}.stds")
             self._write_lfe_series_to_file(stds_file, header, stds, bins, 1)
 
     def calc_2d_lfes(self, se_tag_pair, conds):
@@ -138,18 +137,18 @@ class MBARWrapper:
         bins = list(set(series_pairs))
         lfe, std = self._calc_lfes(bins, series_pairs, conds)
 
-        header = [se_tag, 'lfes']
+        header = [se_tag, "lfes"]
 
-        lfes_filebase = f'{filebase}-{se_tag}'
-        lfes_file = files.TagOutFile(f'{lfes_filebase}.aves')
+        lfes_filebase = f"{filebase}-{se_tag}"
+        lfes_file = files.TagOutFile(f"{lfes_filebase}.aves")
         self._write_lfe_series_to_file(lfes_file, header, lfe, bins, 2)
 
-        stds_file = files.TagOutFile(f'{lfes_filebase}.stds')
+        stds_file = files.TagOutFile(f"{lfes_filebase}.stds")
         self._write_lfe_series_to_file(stds_file, header, std, bins, 2)
 
         return lfe, std, bins
 
-    def calc_all_2d_lfes(self, filebase, se_tag_pairs, all_conds, xtag='temp'):
+    def calc_all_2d_lfes(self, filebase, se_tag_pairs, all_conds, xtag="temp"):
         """Calculate 2D LFEs for given ops and conditions.
 
         Write both LFEs and standard deviations to file.
@@ -173,12 +172,12 @@ class MBARWrapper:
                 lfe, std = self._calc_lfes(bins, series_pairs, conds)
 
             header = np.concatenate([[se_tag1, se_tag2], xvars])
-            lfes_filebase = f'{filebase}-{se_tag_1}-{se_tag_2}'
+            lfes_filebase = f"{filebase}-{se_tag_1}-{se_tag_2}"
 
-            lfes_file = files.TagOutFile(f'{lfes_filebase}.aves')
+            lfes_file = files.TagOutFile(f"{lfes_filebase}.aves")
             self._write_lfe_series_to_file(lfes_file, header, lfes, bins, 1)
 
-            stds_file = files.TagOutFile(f'{lfes_filebase}.stds')
+            stds_file = files.TagOutFile(f"{lfes_filebase}.stds")
             self._write_lfe_series_to_file(stds_file, header, stds, bins, 1)
 
     def estimate_melting_temp(self, conds, guess_temp):
@@ -187,13 +186,13 @@ class MBARWrapper:
         Find the global maximum that is not at the edge of the domain and then
         find minima on either side and minimize difference between them.
         """
-        series = self._decor_outs.get_concatenated_series(
-            'numfullyboundstaples')
+        series = self._decor_outs.get_concatenated_series("numfullyboundstaples")
         bins = list(set(series))
         bins.sort()
         lfes = self._calc_lfes(bins, series, conds)
-        melting_temp = minimize(self._squared_barrier_diff, guess_temp, args=(
-            bins, series, conds)).x[0]
+        melting_temp = minimize(
+            self._squared_barrier_diff, guess_temp, args=(bins, series, conds)
+        ).x[0]
 
         return melting_temp
 
@@ -202,21 +201,21 @@ class MBARWrapper:
 
         Minimize the difference between the LFEs at the edges of the range.
         """
-        series = self._decor_outs.get_concatenated_series(
-            'numfullyboundstaples')
+        series = self._decor_outs.get_concatenated_series("numfullyboundstaples")
         bins = list(set(series))
         bins.sort()
         lfes = self._calc_lfes(bins, series, conds)
-        melting_temp = minimize(self._squared_endpoints_diff, guess_temp, args=(
-            bins, series, conds)).x[0]
+        melting_temp = minimize(
+            self._squared_endpoints_diff, guess_temp, args=(bins, series, conds)
+        ).x[0]
 
         return melting_temp
 
     def _calc_decorrelated_rpots_for_all_conditions(self):
         conditions_rpots = []
-        enes = self._decor_outs.get_concatenated_datatype('enes')
-        ops = self._decor_outs.get_concatenated_datatype('ops')
-        staples = self._decor_outs.get_concatenated_datatype('staples')
+        enes = self._decor_outs.get_concatenated_datatype("enes")
+        ops = self._decor_outs.get_concatenated_datatype("ops")
+        staples = self._decor_outs.get_concatenated_datatype("staples")
         for conds in self._decor_outs.all_conditions:
 
             # What if I just want to do one rep?
@@ -226,16 +225,15 @@ class MBARWrapper:
         return np.array(conditions_rpots)
 
     def _calc_lfes(self, bins, series, conds):
-        enes = self._decor_outs.get_concatenated_datatype('enes')
-        ops = self._decor_outs.get_concatenated_datatype('ops')
-        staples = self._decor_outs.get_concatenated_datatype('staples')
+        enes = self._decor_outs.get_concatenated_datatype("enes")
+        ops = self._decor_outs.get_concatenated_datatype("ops")
+        staples = self._decor_outs.get_concatenated_datatype("staples")
         rpots = utility.calc_reduced_potentials(enes, ops, staples, conds)
 
         value_to_bin = {value: i for i, value in enumerate(bins)}
         bin_index_series = [value_to_bin[i] for i in series]
         bin_index_series = np.array(bin_index_series)
-        lfes, stds = self._mbar.computePMF(
-            rpots, bin_index_series, len(bins))
+        lfes, stds = self._mbar.computePMF(rpots, bin_index_series, len(bins))
 
         return lfes, stds
 
@@ -245,17 +243,17 @@ class MBARWrapper:
         file.write(header, data)
 
     def _squared_endpoints_diff(self, temp, bins, series, conds):
-        conds._conditions['temp'] = temp
+        conds._conditions["temp"] = temp
         lfes, stds = self._calc_lfes(bins, series, conds)
 
-        return (lfes[0] - lfes[-1])**2
+        return (lfes[0] - lfes[-1]) ** 2
 
 
 # Maybe these should be somewhere else?
 def find_barrier(lfes):
     maxima_i = argrelextrema(lfes, np.greater)[0]
     if len(maxima_i) == 0:
-        print('No barrier detected')
+        print("No barrier detected")
         raise Exception
 
     maxima = lfes[maxima_i]

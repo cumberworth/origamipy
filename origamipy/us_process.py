@@ -10,13 +10,13 @@ import numpy as np
 
 def create_win_filename(win, filebase, ext):
     """Create filename for given window."""
-    postfix = '_win'
+    postfix = "_win"
     for win_min in win[0]:
-        postfix += '-' + str(win_min)
+        postfix += "-" + str(win_min)
 
-    postfix += '-'
+    postfix += "-"
     for win_max in win[1]:
-        postfix += '-' + str(win_max)
+        postfix += "-" + str(win_max)
 
     filename = filebase + postfix + ext
 
@@ -30,13 +30,13 @@ def create_window_filebases(wins, filebase):
     """
     win_filebases = []
     for win in wins:
-        postfix = '_win'
+        postfix = "_win"
         for win_min in win[0]:
-            postfix += '-' + str(win_min)
+            postfix += "-" + str(win_min)
 
-        postfix += '-'
+        postfix += "-"
         for win_max in win[1]:
-            postfix += '-' + str(win_max)
+            postfix += "-" + str(win_max)
 
         win_filebases.append(filebase + postfix)
 
@@ -51,7 +51,7 @@ def read_windows_file(filename):
     tags = [tag for tag in lines[0].split()]
     wins = []
     for line in lines[1:]:
-        mins_raw, maxs_raw = line.split(',')
+        mins_raw, maxs_raw = line.split(",")
         mins = tuple(map(int, mins_raw.split()))
         maxs = tuple(map(int, maxs_raw.split()))
         win = (mins, maxs)
@@ -63,9 +63,9 @@ def read_windows_file(filename):
 def get_op_tags_from_bias_functions(bias_functions, bias_tags):
     op_tags = []
     for bias_tag in bias_tags:
-        for bias in bias_functions['origami']['bias_functions']:
-            if bias_tag == bias['tag']:
-                op_tags.append(bias['ops'][0])
+        for bias in bias_functions["origami"]["bias_functions"]:
+            if bias_tag == bias["tag"]:
+                op_tags.append(bias["ops"][0])
 
     return op_tags
 
@@ -81,7 +81,6 @@ def get_all_points(win, point, points, comp):
             points = get_all_points(win, point, points, comp)
             point.pop()
             comp -= 1
-
 
     return points
 

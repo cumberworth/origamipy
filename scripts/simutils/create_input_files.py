@@ -6,20 +6,20 @@ import numpy as np
 
 """A script to create input json files from sequences."""
 
-STAPLE_SEQFILE = 'tile_staples.seq'
-SCAFFOLD_SEQFILE = 'tile_scaffold.seq'
-OUTPUT_FILENAME = 'tile_unbound.json'
+STAPLE_SEQFILE = "tile_staples.seq"
+SCAFFOLD_SEQFILE = "tile_scaffold.seq"
+OUTPUT_FILENAME = "tile_unbound.json"
 CYCLIC = True
 
-COMPLEMENTARY_BASE_PAIRS = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'}
+COMPLEMENTARY_BASE_PAIRS = {"A": "T", "T": "A", "G": "C", "C": "G"}
 
 
 def read_seqfile(filename):
     """Read seq files in ??? format and strip metadata."""
     with open(filename) as inp:
-        seqs = inp.read().split('\n')
-        seqs = [seq for seq in seqs if not '>' in seq]
-        seqs = [seq for seq in seqs if seq != '']
+        seqs = inp.read().split("\n")
+        seqs = [seq for seq in seqs if not ">" in seq]
+        seqs = [seq for seq in seqs if seq != ""]
 
     return seqs
 
@@ -30,7 +30,7 @@ def reverse_complement(seq):
     for base in seq:
         comp_seq_list.append(COMPLEMENTARY_BASE_PAIRS[base])
 
-    comp_seq = ''.join(comp_seq_list)
+    comp_seq = "".join(comp_seq_list)
     return comp_seq[::-1]
 
 
@@ -94,8 +94,14 @@ for staple in staples:
     scaffold_identities.extend([domain_1_identity, domain_2_identity])
 
 # Sort scaffold identities based on there order along the scaffold chain
-scaffold_identities = [[-identity for (index, identity) in sorted(zip(
-    scaffold_indices, scaffold_identities), key=lambda pair: pair[0])]]
+scaffold_identities = [
+    [
+        -identity
+        for (index, identity) in sorted(
+            zip(scaffold_indices, scaffold_identities), key=lambda pair: pair[0]
+        )
+    ]
+]
 
 # Reorder scaffold domain sequences to be consistent
 scaffold_domains_reordered = []
@@ -112,8 +118,12 @@ positions = []
 orientations = []
 if CYCLIC:
     position = np.array([0, 0, 0])
-    directions = np.array([1, 0, 0]), np.array(
-        [0, -1, 0]), np.array([-1, 0, 0]), np.array([0, 1, 0])
+    directions = (
+        np.array([1, 0, 0]),
+        np.array([0, -1, 0]),
+        np.array([-1, 0, 0]),
+        np.array([0, 1, 0]),
+    )
     for direction in directions:
         for j in range(len(scaffold_domains) // 4):
             position += direction
@@ -129,20 +139,19 @@ else:
         orientations.append([1, 0, 0])
 
 # Output json file
-json_origami = {'origami': {}}
-json_origami['origami']['cyclic'] = CYCLIC
+json_origami = {"origami": {}}
+json_origami["origami"]["cyclic"] = CYCLIC
 identities = scaffold_identities + staple_identities
-json_origami['origami']['identities'] = identities
-json_origami['origami']['sequences'] = sequences
-json_origami['origami']['configurations'] = []
-json_origami['origami']['configurations'].append({})
-json_origami['origami']['configurations'][0]['step'] = 0
-json_origami['origami']['configurations'][0]['chains'] = []
-json_origami['origami']['configurations'][0]['chains'].append({})
-json_origami['origami']['configurations'][0]['chains'][0]['index'] = 0
-json_origami['origami']['configurations'][0]['chains'][0]['identity'] = 0
-json_origami['origami']['configurations'][0]['chains'][0]['positions'] = positions
-json_origami['origami']['configurations'][0]['chains'][0]['orientations'] = orientations
+json_origami["origami"]["identities"] = identities
+json_origami["origami"]["sequences"] = sequences
+json_origami["origami"]["configurations"] = []
+json_origami["origami"]["configurations"].append({})
+json_origami["origami"]["configurations"][0]["step"] = 0
+json_origami["origami"]["configurations"][0]["chains"] = []
+json_origami["origami"]["configurations"][0]["chains"].append({})
+json_origami["origami"]["configurations"][0]["chains"][0]["index"] = 0
+json_origami["origami"]["configurations"][0]["chains"][0]["identity"] = 0
+json_origami["origami"]["configurations"][0]["chains"][0]["positions"] = positions
+json_origami["origami"]["configurations"][0]["chains"][0]["orientations"] = orientations
 
-json.dump(json_origami, open(OUTPUT_FILENAME, 'w'),
-          indent=4, separators=(',', ': '))
+json.dump(json_origami, open(OUTPUT_FILENAME, "w"), indent=4, separators=(",", ": "))
