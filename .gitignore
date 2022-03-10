@@ -1,0 +1,6 @@
+*pycache*
+*swp
+tags
+build/
+dist/
+origamipy.egg-info/
