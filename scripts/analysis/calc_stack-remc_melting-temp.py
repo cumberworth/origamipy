@@ -6,6 +6,8 @@ It is assumed there is a barrier between the unassembled and assembled states.
 The melting temperature here is defined as that at which the local minima on
 either side of the barrier are equal. For the this temperature, the LFEs are
 calculate across the selected order parameter.
+
+Has not been tested recently, so consider only as a starting point.
 """
 
 import argparse

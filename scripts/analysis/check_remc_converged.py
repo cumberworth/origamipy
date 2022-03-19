@@ -4,13 +4,14 @@
 
 Convergence criteria is based on number of steps following all replicas having
 sampled a fully stacked state.
+
+Has not been tested recently, so consider only as a starting point.
 """
 
 import argparse
 
 from origamipy import biases
 from origamipy import conditions
-from origamipy import decorrelate
 from origamipy import files
 from origamipy import outputs
 
@@ -27,7 +28,7 @@ def main():
         inp_filebase, all_conditions, args.reps
     )
     reps = len(sim_collections[0]._reps)
-    reps_converged = [False for i in range(reps)]
+    reps_converged = [False for _ in range(reps)]
     for rep in range(reps):
         for sim_collection in sim_collections:
             ops = sim_collection.get_reps_data("ops")[rep]
@@ -59,6 +60,7 @@ def construct_conditions(args, fileformatter, system_file):
         "bias": [biases.NoBias()],
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 

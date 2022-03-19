@@ -1,6 +1,9 @@
 #!/bin/env python
 
-"""Calculate scaffold RMSD relative to a given configuration."""
+"""Calculate scaffold RMSD relative to a given configuration.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 

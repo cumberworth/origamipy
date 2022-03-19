@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 
-"""Select starting configs for each US window"""
+"""Select starting configs for each US window."""
 
 import argparse
-import copy
 import json
-import random
-import sys
 
 from origamipy import datatypes
 from origamipy import files

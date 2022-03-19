@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-"""Plot occupancy curves of each staple type."""
+"""Plot occupancy curves of each staple type.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 

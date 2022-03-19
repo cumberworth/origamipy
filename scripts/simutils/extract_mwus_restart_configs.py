@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-"""Extract specified file of given trajectory to single config trajfile"""
+"""Extract specified file of given trajectory to single config trajfile."""
 
 import argparse
-import pdb
-import sys
 
 from origamipy import files
 from origamipy import us_process
@@ -13,7 +11,7 @@ from origamipy import us_process
 def main():
     args = parse_args()
     tags, wins = us_process.read_windows_file(args.wins_filename)
-    for i, win in enumerate(wins):
+    for win in wins:
         inp_postfix = "_iter-{}.trj".format(args.iteration)
         trj_inp_filename = us_process.create_win_filename(
             win, args.inp_filebase, inp_postfix

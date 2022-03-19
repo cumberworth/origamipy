@@ -4,11 +4,6 @@
 
 import argparse
 import numpy as np
-import pandas as pd
-from scipy import interpolate
-from scipy.optimize import minimize
-
-from origamipy import files
 
 
 def main():

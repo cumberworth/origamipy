@@ -1,14 +1,13 @@
 #!/usr/bin/env python
 
-"""Calculate expectation values across a given order parameter"""
+"""Calculate expectation values across a given order parameter.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
-import sys
 
 import numpy as np
-from scipy.signal import argrelextrema
-from scipy import interpolate
-from scipy.optimize import minimize
 
 from origamipy import biases
 from origamipy import conditions
@@ -170,7 +169,7 @@ def create_output_filepathbase(args):
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        descriptions=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description=__doc__, formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument("system_filename", type=str, help="System file")
     parser.add_argument("filebase", type=str, help="Base name for files")

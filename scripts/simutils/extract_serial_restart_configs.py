@@ -3,8 +3,6 @@
 """Extract final configurations for restarting serial runs."""
 
 import argparse
-import pdb
-import sys
 
 from origamipy import files
 

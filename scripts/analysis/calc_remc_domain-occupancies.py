@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-"""Calculate scaffold domain occupancies for a simulation set"""
+"""Calculate scaffold domain occupancies for a simulation set.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 
 import argparse
-import os.path
 
 import numpy as np
 
@@ -13,8 +15,6 @@ from origamipy import conditions
 from origamipy import datatypes
 from origamipy import files
 from origamipy import outputs
-from origamipy import decorrelate
-from origamipy import mbar_wrapper
 from origamipy import utility
 
 
@@ -52,7 +52,7 @@ def main():
                         ops.add_column(tag, states[:, i])
 
                 out_filebase = run_filebase + "_mod"
-                ops.to_file(run_filebase)
+                ops.to_file(out_filebase)
 
 
 def construct_conditions(args, fileformatter, system_file):
@@ -62,6 +62,7 @@ def construct_conditions(args, fileformatter, system_file):
         "bias": [biases.NoBias()],
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 

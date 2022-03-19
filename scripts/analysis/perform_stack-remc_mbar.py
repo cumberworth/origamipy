@@ -2,8 +2,9 @@
 
 """Carry out standard MBAR analysis on 1D REMC simulation output.
 
-The exchange variable is assumed to be temperature.
-in that order.
+The exchange variable is assumed to be the stacking energy multiplier.
+
+Has not been tested recently, so consider only as a starting point.
 """
 
 import argparse

@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-"""Plot barrier height vs temperature."""
+"""Plot barrier height vs temperature.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 

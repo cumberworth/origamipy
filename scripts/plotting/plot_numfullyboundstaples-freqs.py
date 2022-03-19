@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""Plot frequencies of configurations at given order parameter"""
+"""Plot frequencies of configurations at given order parameter."""
 
 import argparse
 

@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 
-"""Check REMC tempatures have converged to within give threshold"""
+"""Check REMC tempatures have converged to within give threshold.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 import numpy as np
-import pandas as pd
-from scipy import interpolate
-from scipy.optimize import minimize
-
-from origamipy import files
 
 
 def main():

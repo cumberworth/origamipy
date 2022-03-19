@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-import json
-import pdb
-import numpy as np
+"""A script to create input json files from sequences.
 
-"""A script to create input json files from sequences."""
+Has not been tested recently, so consider only as a starting point.
+"""
+
+import json
+import numpy as np
 
 STAPLE_SEQFILE = "tile_staples.seq"
 SCAFFOLD_SEQFILE = "tile_scaffold.seq"

@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
-"""Calculate average melting temperature for a given system and strand []."""
+"""Calculate average melting temperature for a given system and strand [].
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
-import sys
 
-from origamipy.origami_io import *
-from origamipy.nearest_neighbour import *
+import numpy as np
+
+from origamipy import files
+from origamipy import nearest_neighbour as nn
 
 parser = argparse.ArgumentParser()
 parser.add_argument("filename", type=str, help="Configuration file name.")
@@ -18,13 +22,13 @@ config_filename = args.filename
 strand_M = args.strand_M
 cation_M = args.cation_M
 
-input_file = JSONInputFile(config_filename)
+input_file = files.JSONStructInpFile(config_filename)
 
 # Calculate melting points of individual fully bound domains
 melting_points = []
 for staple in input_file.sequences[1:]:
     for seq in staple:
-        melting_point = calc_melting_point(seq, strand_M, cation_M)
+        melting_point = nn.calc_melting_point(seq, strand_M, cation_M)
         melting_points.append(melting_point)
         print("{:.1f} K".format(melting_point), end=" ")
     print()
@@ -44,7 +48,7 @@ print()
 # Calculate internal melting temperatures
 internal_melting_points = []
 for seq in input_file.sequences[0]:
-    internal_melting_point = calc_internal_melting_point(seq, cation_M)
+    internal_melting_point = nn.calc_internal_melting_point(seq, cation_M)
     internal_melting_points.append(internal_melting_point)
 
 # Averages
@@ -62,7 +66,7 @@ print()
 staple_melting_points = []
 for staple in input_file.sequences[1:]:
     staple_seq = "".join(staple)
-    staple_melting_point = calc_melting_point(staple_seq, strand_M, cation_M)
+    staple_melting_point = nn.calc_melting_point(staple_seq, strand_M, cation_M)
     staple_melting_points.append(staple_melting_point)
 
 mean_sT = np.mean(staple_melting_points)

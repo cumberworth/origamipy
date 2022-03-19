@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-"""Plot melting temperartures as heatmap."""
+"""Plot melting temperartures as heatmap.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 

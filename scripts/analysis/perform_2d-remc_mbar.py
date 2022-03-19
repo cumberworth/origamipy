@@ -4,6 +4,8 @@
 
 The exchange variables are assumed to be temperature and stacking multiplier,
 in that order.
+
+Has not been tested recently, so consider only as a starting point.
 """
 
 import argparse
@@ -32,6 +34,7 @@ def main():
     mbarw.perform_mbar()
 
     out_filebase = create_output_filepathbase(args)
+    # Fix
     mbarw.calc_all_expectations(out_filebase)
     for smult in args.stack_mults:
         reduced_conditions = construct_variable_temp_conditions(
@@ -80,6 +83,7 @@ def construct_variable_temp_conditions(args, stack_mult, fileformatter, system_f
         "bias": [stack_bias],
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 

@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-"""Carry out standard MBAR analysis on 1D REMC simulation output.
-
-The exchange variable is assumed to be temperature.
-"""
+"""Carry out standard MBAR analysis on REMC simulation output."""
 
 import argparse
 
@@ -24,7 +21,6 @@ def main():
     system_file = files.JSONStructInpFile(args.system_filename)
     staple_lengths = utility.calc_staple_lengths(system_file)
     staple_types = utility.calc_num_staple_types(system_file)
-    num_scaffold_domains = utility.calc_num_scaffold_domains(system_file)
     inp_filebase = f"{args.outs_dir}/{args.filebase}"
     fileformatter = construct_fileformatter()
     all_conditions = conditions.construct_remc_conditions(
@@ -88,7 +84,6 @@ def main():
 
     # Calculate expectations along OP slices
     mbarws = []
-    all_decor_outs = []
     sampled_ops = []
     for i in range(1, args.assembled_op + 1):
         sim_collections = []
@@ -107,7 +102,6 @@ def main():
             continue
 
         sampled_ops.append(i)
-        all_decor_outs.append(decor_outs)
         mbarw = mbar_wrapper.MBARWrapper(decor_outs)
         mbarw.perform_mbar()
         mbarws.append(mbarw)
@@ -120,7 +114,7 @@ def main():
     #    for i in range(num_scaffold_domains):
     #        all_tags.append(f'domainstate{i}')
 
-    aves, stds = calc_reduced_expectations(conds, mbarws, all_decor_outs, all_tags)
+    aves, stds = calc_reduced_expectations(conds, mbarws, all_tags)
 
     aves = np.concatenate([[sampled_ops], np.array(aves).T])
     aves_file = files.TagOutFile(f"{out_filebase}-{args.tag}.aves")
@@ -131,10 +125,10 @@ def main():
     stds_file.write([args.tag] + all_tags, stds.T)
 
 
-def calc_reduced_expectations(conds, mbarws, all_decor_outs, tags):
+def calc_reduced_expectations(conds, mbarws, tags):
     all_aves = []
     all_stds = []
-    for mbarw, decor_outs in zip(mbarws, all_decor_outs):
+    for mbarw in mbarws:
         aves = []
         stds = []
         for tag in tags:
@@ -204,6 +198,7 @@ def construct_conditions(args, fileformatter, system_file):
         "bias": [biases.NoBias()],
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 

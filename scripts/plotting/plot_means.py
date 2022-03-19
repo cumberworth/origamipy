@@ -20,7 +20,7 @@ def main():
 
     p = plotting.MeansPlot(args)
     p.plot_figure(ax)
-    p.setup_axis(ax, args["tag"])
+    p.setup_axis(ax, args["tag"], None)
     #    set_labels(ax, ax)
     plotting.save_figure(f, args["plot_filebase"])
 

@@ -3,8 +3,6 @@
 """Extract config at specified step."""
 
 import argparse
-import pdb
-import sys
 
 from origamipy import files
 

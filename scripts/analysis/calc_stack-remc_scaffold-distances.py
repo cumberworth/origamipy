@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
-"""Calculate total number of fully bound staples for a simulation set"""
+"""Calculate total number of fully bound staples for a simulation set.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 
 import argparse
-import os.path
 
 import numpy as np
 
@@ -14,8 +16,6 @@ from origamipy import config_process
 from origamipy import datatypes
 from origamipy import files
 from origamipy import outputs
-from origamipy import decorrelate
-from origamipy import mbar_wrapper
 
 
 def main():
@@ -24,6 +24,7 @@ def main():
     domain_pairs = parse_domain_pairs(args.domain_pairs)
 
     fileformatter = construct_fileformatter()
+    # Fix
     all_conditions = construct_conditions(args, fileformatter, system_filename)
     inp_filebase = create_input_filepathbase(args)
     sim_collections = outputs.create_sim_collections(
@@ -38,8 +39,8 @@ def main():
                 trj_filename = "{}.trj".format(run_filebase)
                 trj_file = files.TxtTrajInpFile(trj_filename, system_file)
                 ops = datatypes.OrderParams.from_file(run_filebase)
-                all_dists = [[] for i in range(len(domain_pairs))]
-                for i, step in enumerate(trj_file):
+                all_dists = [[] for _ in range(len(domain_pairs))]
+                for step in trj_file:
                     config = np.array(step[0]["positions"])
                     for j, domain_pair in enumerate(domain_pairs):
                         pos_i = config[domain_pair[0]]
@@ -86,6 +87,7 @@ def construct_conditions(args, fileformatter, system_filename):
         "bias": stack_biases,
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_filename)
 
 

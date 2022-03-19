@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Calculate average NN enthalpies and entropies of bound and misbound domains"""
+"""Calculate average NN enthalpies and entropies of bound and misbound domains."""
 
 import argparse
 

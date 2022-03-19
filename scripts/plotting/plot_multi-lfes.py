@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-"""Plot LFE difference of a binary OP against another OP."""
+"""Plot LFE difference of a binary OP against another OP.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 import sys

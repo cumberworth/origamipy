@@ -4,26 +4,22 @@
 
 import argparse
 
-from matplotlib import cm
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
 import matplotlib.gridspec as gridspec
 from matplotlibstyles import styles
 from matplotlibstyles import plotutils
-import numpy as np
-import pandas as pd
 
 from origamipy import plotting
 
 
 def main():
     args = vars(parse_args())
-    f = plotting.setup_figure()
+    f = setup_figure()
     gs = gridspec.GridSpec(1, 1, f)
     ax = f.add_subplot(gs[0, 0])
     axes = [ax, ax.twiny()]
 
-    p = LFEsRepTempsPlot(args)
+    p = plotting.LFEsRepTempsPlot(args)
     p.plot_figure(axes)
     p.setup_axis(axes)
     #    set_labels(f, ax, mappable)

@@ -4,6 +4,8 @@
 
 The exchange variables are assumed to be temperature and stacking multiplier,
 in that order.
+
+Has not been tested recently, so consider only as a starting point.
 """
 
 import argparse
@@ -13,7 +15,6 @@ from origamipy import conditions
 from origamipy import decorrelate
 from origamipy import files
 from origamipy import outputs
-from origamipy import remc
 
 
 def main():
@@ -27,6 +28,7 @@ def main():
     )
     decor_outs = decorrelate.DecorrelatedOutputs(sim_collections, all_conditions)
     decor_outs.perform_decorrelation(args.skip)
+    # Update
     decor_outs.apply_masks()
     decor_outs.write_decors_to_files()
 
@@ -43,6 +45,7 @@ def construct_conditions(args, fileformatter, system_file):
         "bias": stack_biases,
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 

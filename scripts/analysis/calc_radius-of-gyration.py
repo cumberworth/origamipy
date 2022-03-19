@@ -1,6 +1,9 @@
 #!/bin/env python
 
-"""Calculate instantanious scaffold radius of gyration."""
+"""Calculate instantanious scaffold radius of gyration.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 

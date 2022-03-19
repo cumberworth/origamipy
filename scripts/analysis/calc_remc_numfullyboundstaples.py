@@ -1,20 +1,14 @@
 #!/usr/bin/env python
 
-"""Calculate total number of fully bound staples for a simulation set"""
+"""Calculate total number of fully bound staples for a simulation set."""
 
 
 import argparse
-import os.path
 
-import numpy as np
-
-from origamipy import biases
 from origamipy import conditions
 from origamipy import datatypes
 from origamipy import files
 from origamipy import outputs
-from origamipy import decorrelate
-from origamipy import mbar_wrapper
 from origamipy import utility
 
 

@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
-"""Extract configurations with specified order params."""
+"""Extract configurations with specified order params.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
-import pdb
-import sys
 
 from origamipy import files
 
@@ -30,10 +31,8 @@ def main():
             if ops_series == 0:
                 continue
             for step in range(ops_series.steps):
-                filter_step = True
                 for tag, value in zip(args.tags, args.values):
                     if ops_series[tag][step] != value:
-                        filter_step = False
                         break
 
                     filtered_steps.append(step)
@@ -63,6 +62,7 @@ def construct_conditions(args, fileformatter, system_file):
         "bias": stack_biases,
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 

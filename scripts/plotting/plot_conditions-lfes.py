@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-"""Plot LFEs for give order parameter across temperature range."""
+"""Plot LFEs for give order parameter across temperature range.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 

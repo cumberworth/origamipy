@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-"""Perform decorrelation on 1D REMC simulation output.
-
-The exchange variables are assumed to be temperature and stacking multiplier,
-in that order.
-"""
+"""Perform decorrelation on REMC simulation output."""
 
 import argparse
 

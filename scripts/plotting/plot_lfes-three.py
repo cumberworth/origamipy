@@ -1,15 +1,16 @@
 #!/usr/bin/python
 
-"""Plot numstaples, numfulldomains, and numfullybound staples LFEs."""
+"""Plot numstaples, numfulldomains, and numfullybound staples LFEs.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
-import sys
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib import gridspec
 from matplotlib.ticker import MaxNLocator
-import numpy as np
 import pandas as pd
 
 from matplotlibstyles import styles

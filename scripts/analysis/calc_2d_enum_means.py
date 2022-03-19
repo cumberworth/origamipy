@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-"""Take output from count matrices and average"""
+"""Take output from count matrices and average.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
-import sys
-
-import numpy as np
 
 from origamipy import conditions
 from origamipy import files
@@ -18,6 +18,8 @@ def main():
     system_file = files.JSONStructInpFile(args.system_filename)
     conditions_map = construct_conditions_map(args)
     fileformatter = construct_fileformatter()
+
+    # Needs to be updated
     all_conditions = conditions.AllSimConditions(
         conditions_map, fileformatter, system_file
     )

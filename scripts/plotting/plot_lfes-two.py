@@ -1,6 +1,9 @@
 #!/usr/bin/python
 
-"""Plot numfulldomains and numfullybound staples LFEs."""
+"""Plot numfulldomains and numfullybound staples LFEs.
+
+Has not been tested recently, so consider only as a starting point.
+"""
 
 import argparse
 

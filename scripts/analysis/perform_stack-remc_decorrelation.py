@@ -2,8 +2,9 @@
 
 """Perform decorrelation on 1D REMC simulation output.
 
-The exchange variables are assumed to be temperature and stacking multiplier,
-in that order.
+The exchange variables are assumed to be the stacking energy multiplier.
+
+Has not been tested recently, so consider only as a starting point.
 """
 
 import argparse
@@ -26,6 +27,7 @@ def main():
     )
     decor_outs = decorrelate.DecorrelatedOutputs(sim_collections, all_conditions)
     decor_outs.perform_decorrelation(args.skip)
+    # Fix
     decor_outs.apply_masks()
     decor_outs.write_decors_to_files()
 
@@ -47,6 +49,7 @@ def construct_conditions(args, fileformatter, system_file):
         "bias": stack_biases,
     }
 
+    # Update
     return conditions.AllSimConditions(conditions_map, fileformatter, system_file)
 
 

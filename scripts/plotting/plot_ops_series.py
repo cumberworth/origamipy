@@ -4,16 +4,16 @@
 
 Plots number of bound staples, number of bound domains, number of misbound
 domains, and number of stacked pairs.
+
+Has not been tested recently, so consider only as a starting point.
 """
 
 import argparse
-import sys
 
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import matplotlib.gridspec as gridspec
 import numpy as np
 
 import origamipy.plot as plot

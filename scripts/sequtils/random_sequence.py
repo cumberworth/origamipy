@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+
+"""Generate a random DNA sequence of given length."""
+
 import numpy as np
 import sys
 
