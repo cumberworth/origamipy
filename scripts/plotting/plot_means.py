@@ -5,26 +5,24 @@
 import argparse
 
 import matplotlib.pyplot as plt
-from matplotlib import cm
 from matplotlib import gridspec
-import numpy as np
-from scipy import interpolate
-
 from matplotlibstyles import styles
 from matplotlibstyles import plotutils
-import origamipy.nearest_neighbour as nn
-from origamipy import plot
+
+from origamipy import plotting
 
 
 def main():
-    args = parse_args()
+    args = vars(parse_args())
     f = setup_figure()
     gs = gridspec.GridSpec(1, 1, f)
     ax = f.add_subplot(gs[0])
-    plot_figure(f, ax, vars(args))
-    setup_axis(ax, args.tag)
+
+    p = plotting.MeansPlot(args)
+    p.plot_figure(ax)
+    p.setup_axis(ax, args["tag"])
     #    set_labels(ax, ax)
-    save_figure(f, args.plot_filebase)
+    plotting.save_figure(f, args["plot_filebase"])
 
 
 def setup_figure():
@@ -32,101 +30,6 @@ def setup_figure():
     figsize = (plotutils.cm_to_inches(14), plotutils.cm_to_inches(11))
 
     return plt.figure(figsize=figsize, dpi=300, constrained_layout=True)
-
-
-def plot_figure(f, ax, args, labels=None):
-    systems = args["systems"]
-    varis = args["varis"]
-    input_dir = args["input_dir"]
-    tag = args["tag"]
-    assembled_values = args["assembled_values"]
-    posts = args["posts"]
-    nncurves = args["nncurves"]
-    staple_M = args["staple_M"]
-    binds = args["binds"]
-    bindh = args["bindh"]
-    stackene = args["stackene"]
-    contins = args["continuous"]
-
-    cmap = cm.get_cmap("tab10")
-
-    lines = []
-
-    if labels is None:
-        labels = varis
-
-    for i in range(len(systems)):
-        system = systems[i]
-        vari = varis[i]
-        label = labels[i]
-        assembled_value = assembled_values[i]
-        if posts is not None:
-            post = posts[i]
-        else:
-            post = ""
-
-        if nncurves is not None:
-            nncurve = nncurves[i]
-        else:
-            nncurve = False
-
-        if contins is not None:
-            contin = contins[i]
-        else:
-            contin = False
-
-        ax.axhline(assembled_value, linestyle="--", color=cmap(i))
-
-        inp_filebase = f"{input_dir}/{system}-{vari}{post}"
-        all_aves, all_stds = plot.read_expectations(inp_filebase)
-        temps = all_aves["temp"]
-        means = all_aves[tag]
-        stds = all_stds[tag]
-        if nncurve:
-            fracs = nn.calc_excess_bound_fractions(bindh, binds, staple_M, 10)
-            interpolated_temp = interpolate.interp1d(means, temps, kind="linear")
-            halfway_temp = interpolated_temp(assembled_value / 2)
-            occ_temps = np.linspace(halfway_temp - 10, halfway_temp + 10, 50)
-            ax.plot(occ_temps, fracs * assembled_value, color="0.4")
-
-        if contin:
-            ax.fill_between(temps, means + stds, means - stds, color="0.8")
-            lines.append(
-                ax.plot(temps, means, marker="None", label=label, color=cmap(i))[0]
-            )
-
-            # Plot the actual simulation temperature as a point
-            inp_filebase = f"{input_dir}/{system}-{vari}"
-            all_aves, all_stds = plot.read_expectations(inp_filebase)
-            mean = all_aves[tag]
-            std = all_stds[tag]
-            temp = all_aves["temp"]
-            ax.errorbar(temp, mean, yerr=std, marker="o", label=label, color=cmap(i))
-        else:
-            lines.append(
-                ax.errorbar(
-                    temps, means, yerr=stds, marker="o", label=label, color=cmap(i)
-                )[1][1]
-            )
-
-    return lines
-
-
-def setup_axis(ax, ylabel):
-    ax.set_xlabel(r"$T / K$")
-    ax.set_ylabel(ylabel)
-
-
-def set_labels(ax):
-    ax.set_axis_off()
-    handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles, labels, loc="center", frameon=False, ncol=1)
-
-
-def save_figure(f, plot_filebase):
-    # f.savefig(plot_filebase + '.pgf', transparent=True)
-    f.savefig(plot_filebase + ".pdf", transparent=True)
-    f.savefig(plot_filebase + ".png", transparent=True)
 
 
 def parse_args():

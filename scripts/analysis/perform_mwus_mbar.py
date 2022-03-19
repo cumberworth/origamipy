@@ -3,12 +3,9 @@
 """Carry out standard MBAR analysis on MWUS simulation output."""
 
 import argparse
-import json
+import sys
 
 import numpy as np
-from scipy.signal import argrelextrema
-from scipy import interpolate
-from scipy.optimize import minimize
 
 from origamipy import biases
 from origamipy import conditions
@@ -16,7 +13,6 @@ from origamipy import decorrelate
 from origamipy import files
 from origamipy import mbar_wrapper
 from origamipy import outputs
-from origamipy import us_process
 from origamipy import utility
 
 
@@ -97,27 +93,59 @@ def main():
     mbarw.calc_all_1d_lfes(lfes_filebase, se_tags, [conds])
     mbarw.calc_all_expectations(exps_filebase, se_tags, [conds])
 
-    # Calc melting temps for other stacking energies
+    # Calc melting temps, expectations, and lfes for other stacking energies
     #    for stack_mult in [0, 0.25, 0.5, 0.75]:
+    #    for stack_mult in [1.25, 1.5, 1.75, 2]:
     #        print()
-    #        print(f'Stack mult: {stack_mult}')
+    #        print(f"Stack mult: {stack_mult}")
     #        stack_bias = biases.StackingBias(args.stack_ene, stack_mult)
     #        conds = conditions.SimConditions(
-    #            {'temp': args.temp,
-    #             'staple_m': args.staple_m,
-    #             'bias': stack_bias},
-    #            fileformatter, staple_lengths)
+    #            {"temp": args.temp, "staple_m": args.staple_m, "bias": stack_bias},
+    #            fileformatter,
+    #            staple_lengths,
+    #        )
     #        melting_temp = est_melting_temp_and_barrier(
-    #            mbarw, fileformatter, staple_lengths, conds, stack_bias, args)
+    #            mbarw, fileformatter, staple_lengths, conds, stack_bias, args
+    #        )
     #        conds = conditions.SimConditions(
-    #            {'temp': melting_temp,
-    #             'staple_m': args.staple_m,
-    #             'bias': stack_bias},
-    #            fileformatter, staple_lengths)
+    #            {"temp": melting_temp, "staple_m": args.staple_m, "bias": stack_bias},
+    #            fileformatter,
+    #            staple_lengths,
+    #        )
     #
-    #        lfes_filebase = f'{out_filebase}_lfes-melting-stack-{stack_mult}'
+    #        lfes_filebase = f"{out_filebase}_lfes-melting-stack-{stack_mult}"
+    #        exps_filebase = f"{out_filebase}-melting-stack-{stack_mult}"
     #        mbarw.calc_all_1d_lfes(lfes_filebase, se_tags, [conds])
-    #        mbarw.calc_all_expectations(out_filebase, se_tags, [conds])
+    #        mbarw.calc_all_expectations(exps_filebase, se_tags, [conds])
+    #
+    #    print("Quit early for testing")
+    #    sys.exit()
+
+    # Calc melting temps, expectations, and lfes for other hybridization energies
+    for hyb_mult in [0.5, 1.5]:
+        print()
+        print(f"Hyb mult: {hyb_mult}")
+        hyb_bias = biases.HybridizationBias(
+            args.bindh, args.binds, args.misbindh, args.misbinds, hyb_mult
+        )
+        conds = conditions.SimConditions(
+            {"temp": args.temp, "staple_m": args.staple_m, "bias": hyb_bias},
+            fileformatter,
+            staple_lengths,
+        )
+        hyb_melting_temp = est_melting_temp_and_barrier(
+            mbarw, fileformatter, staple_lengths, conds, hyb_bias, args
+        )
+        conds = conditions.SimConditions(
+            {"temp": hyb_melting_temp, "staple_m": args.staple_m, "bias": hyb_bias},
+            fileformatter,
+            staple_lengths,
+        )
+
+        lfes_filebase = f"{out_filebase}_lfes-melting-hyb-{hyb_mult}"
+        exps_filebase = f"{out_filebase}-melting-hyb-{hyb_mult}"
+        mbarw.calc_all_1d_lfes(lfes_filebase, se_tags, [conds])
+        mbarw.calc_all_expectations(exps_filebase, se_tags, [conds])
 
     # Calc expectations for a range of temps around melting
     temp_conds = []
@@ -130,7 +158,9 @@ def main():
         temp_conds.append(conds)
 
     exps_filebase = f"{out_filebase}_temps"
+    lfes_filebase = f"{out_filebase}_lfes-temps"
     mbarw.calc_all_expectations(exps_filebase, se_tags, temp_conds)
+    mbarw.calc_all_1d_lfes(lfes_filebase, se_tags, temp_conds)
 
     # Expecations along OP slices
     mbarws = []
@@ -269,6 +299,26 @@ def parse_args():
     parser.add_argument("tag", type=str, help="Order parameter tag")
     parser.add_argument(
         "assembled_op", type=int, help="Value of order parameter in assembled state"
+    )
+    parser.add_argument(
+        "--bindh",
+        type=float,
+        help="Bound hybridization enthalpy (kb K) (uniform potential)",
+    )
+    parser.add_argument(
+        "--binds",
+        type=float,
+        help="Bound hybridization entropy (kb) (uniform potential)",
+    )
+    parser.add_argument(
+        "--misbindh",
+        type=float,
+        help="Misbound hybridization enthalpy (kb K) (uniform potential)",
+    )
+    parser.add_argument(
+        "--misbinds",
+        type=float,
+        help="Misbound hybridization entropy (kb) (uniform potential)",
     )
     parser.add_argument("--tags", nargs="+", type=str, help="Order parameter tags")
     parser.add_argument(

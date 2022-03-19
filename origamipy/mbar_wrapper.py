@@ -189,7 +189,6 @@ class MBARWrapper:
         series = self._decor_outs.get_concatenated_series("numfullyboundstaples")
         bins = list(set(series))
         bins.sort()
-        lfes = self._calc_lfes(bins, series, conds)
         melting_temp = minimize(
             self._squared_barrier_diff, guess_temp, args=(bins, series, conds)
         ).x[0]
@@ -204,7 +203,6 @@ class MBARWrapper:
         series = self._decor_outs.get_concatenated_series("numfullyboundstaples")
         bins = list(set(series))
         bins.sort()
-        lfes = self._calc_lfes(bins, series, conds)
         melting_temp = minimize(
             self._squared_endpoints_diff, guess_temp, args=(bins, series, conds)
         ).x[0]
@@ -269,8 +267,58 @@ def find_minima(lfes, maximum_i):
     return (lower_lfes.min(), upper_lfes.min())
 
 
+def find_minima_locs(lfes, maximum_i):
+    lower_lfes = lfes[:maximum_i]
+    upper_lfes = lfes[maximum_i:]
+
+    return (lower_lfes.argmin(), upper_lfes.argmin())
+
+
 def calc_forward_barrier_height(lfes):
-    barrier_i = find_barrier(lfes)
+    try:
+        barrier_i = find_barrier(lfes)
+    except:
+        return np.nan
+
     minima = find_minima(lfes, barrier_i)
 
     return lfes[barrier_i] - minima[0]
+
+
+def calc_forward_barrier_error(lfes, stds):
+    try:
+        barrier_i = find_barrier(lfes)
+    except:
+        return np.nan, np.nan
+
+    minima = find_minima(lfes, barrier_i)
+    minima_locs = find_minima_locs(lfes, barrier_i)
+    barrier = lfes[barrier_i] - minima[0]
+    error = np.sqrt(stds[barrier_i]**2 + stds[minima_locs[0]]**2)
+
+    return barrier, error
+
+
+def calc_reverse_barrier_height(lfes):
+    try:
+        barrier_i = find_barrier(lfes)
+    except:
+        return np.nan
+
+    minima = find_minima(lfes, barrier_i)
+
+    return lfes[barrier_i] - minima[1]
+
+
+def calc_reverse_barrier_error(lfes, stds):
+    try:
+        barrier_i = find_barrier(lfes)
+    except:
+        return np.nan, np.nan
+
+    minima = find_minima(lfes, barrier_i)
+    minima_locs = find_minima_locs(lfes, barrier_i)
+    barrier = lfes[barrier_i] - minima[1]
+    error = np.sqrt(stds[barrier_i]**2 + stds[minima_locs[1]]**2)
+
+    return barrier, error

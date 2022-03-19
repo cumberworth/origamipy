@@ -195,9 +195,7 @@ def construct_mwus_conditions(
         for window in windows:
             filebase = "{}_run-{}_rep-{}".format(inp_filebase, start_run, rep)
             grid_biases.append(
-                biases.GridBias(
-                    op_tags, window, min_outside_bias, slope, temp, filebase, itr
-                )
+                biases.GridBias(op_tags, window, min_outside_bias, slope, filebase, itr)
             )
 
         conditions_valuesl.append([[temp], [staple_m], grid_biases])

@@ -7,11 +7,11 @@ import argparse
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib import gridspec
-import numpy as np
-
 from matplotlibstyles import styles
 from matplotlibstyles import plotutils
-from origamipy import plot
+import numpy as np
+
+from origamipy import files
 from origamipy import utility
 
 
@@ -44,7 +44,7 @@ def plot_figure(f, ax, args):
 
     inp_filebase = f"{input_dir}/{filebase}"
     index_to_stapletype = np.loadtxt(mapfile, dtype=int)
-    aves, stds = plot.read_expectations(inp_filebase)
+    aves, stds = files.read_expectations(inp_filebase)
     temps = aves["temp"]
     melting_points = utility.estimate_staple_melting_points(stapletypes, aves, temps)
     min_t = np.min(melting_points)

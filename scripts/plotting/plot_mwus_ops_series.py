@@ -11,6 +11,8 @@ import sys
 
 import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+from matplotlibstyles import styles
+from matplotlibstyles import plotutils
 import numpy as np
 
 import origamipy.plot as plot
@@ -26,8 +28,8 @@ def main():
     tags = ["numstaples", "numfulldomains", "nummisdomains", "numstackedpairs"]
     labels = ["Bound staples", "Bound domains", "Misbound domains", "Stacked pairs"]
     bias_tags, windows = us_process.read_windows_file(args.windows_filename)
-    figsize = (plot.cm_to_inches(18), plot.cm_to_inches(36 * len(windows)))
-    plot.set_default_appearance()
+    figsize = (plotutils.cm_to_inches(18), plotutils.cm_to_inches(36 * len(windows)))
+    styles.set_thin_style()
     f, axes = plt.subplots(3 * len(windows), 1, figsize=figsize, dpi=300)
 
     ax_i = -1

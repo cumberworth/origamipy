@@ -1,7 +1,5 @@
 """Misc. constants and functions for analysis of simulations."""
 
-import math
-import itertools
 import scipy.constants
 from scipy import interpolate
 
@@ -113,10 +111,11 @@ def rotate_vectors_quarter(vectors, rotation_axis, direction):
 
 def calc_reduced_potentials(enes, ops, num_staples, conditions):
     """Reduced potentials as defined in shirts2008."""
-    bias_collection = conditions.total_bias(ops)
+    temp = float(conditions.temp)
+    bias_collection = conditions.total_bias(temp, ops)
     e = enes.enthalpies + enes.stacking_energies + bias_collection
     G = (conditions.reduced_staple_us * num_staples._data[1:].T).sum(axis=1)
-    renes = e / float(conditions.temp)
+    renes = e / temp
 
     return renes - enes.entropies + G
 

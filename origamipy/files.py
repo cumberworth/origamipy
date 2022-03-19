@@ -4,6 +4,7 @@ import collections
 import json
 
 import numpy as np
+import pandas as pd
 
 NEWLINE = "\n"
 
@@ -377,3 +378,12 @@ class StatesInpFile(StepsInpFile):
 
     def _parse_header(self):
         pass
+
+
+def read_expectations(filebase):
+    aves_filename = "{}.aves".format(filebase)
+    aves = pd.read_csv(aves_filename, sep=" ")
+    stds_filename = "{}.stds".format(filebase)
+    stds = pd.read_csv(stds_filename, sep=" ")
+
+    return aves, stds
