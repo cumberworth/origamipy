@@ -2,10 +2,8 @@
 
 import pytest
 
-from origamipy import io
+from origamipy import files
 
 @pytest.fixture
 def four_domain_struct_inp_file():
-    return io.JSONStructInpFile('tests/data/four_unbound.json')
-
-print('HERE')
+    return files.JSONStructInpFile('tests/data/four_unbound.json')

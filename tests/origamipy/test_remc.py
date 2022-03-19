@@ -3,7 +3,7 @@
 import pytest
 
 from origamipy import remc
-from origamipy import io
+from origamipy import files
 
 @pytest.fixture
 def temps():
@@ -15,11 +15,16 @@ def stack_mults():
 
 @pytest.fixture
 def fileinfo(tmpdir):
-    return io.FileInfo('tests/data', tmpdir, 'four-2dremc')
+    return files.FileInfo('tests/data', tmpdir, 'four-2dremc')
 
 @pytest.fixture
-def all_exchange_params(temps, stack_mults, four_domain_struct_inp_file):
-    return remc.create_exchange_params(temps, stack_mults)
+def all_exchange_params(temps, stack_mults):
+    all_params = []
+    for temp in temps:
+        for stackm in stack_mults:
+            all_params.append("{}-{}".format(temp, stackm))
+
+    return all_params
 
 def test_deconvolute_remc_trj(all_exchange_params, fileinfo,
                               four_domain_struct_inp_file):
@@ -28,11 +33,11 @@ def test_deconvolute_remc_trj(all_exchange_params, fileinfo,
     params = '342-0.0'
     output_filename = '{}/{}-{}.trj'.format(fileinfo.outputdir,
                                               fileinfo.filebase, params)
-    output_trj_file = io.TxtTrajInpFile(output_filename,
+    output_trj_file = files.TxtTrajInpFile(output_filename,
                                    four_domain_struct_inp_file)
     original_filename = '{}/{}-{}.trj'.format(fileinfo.inputdir,
                                               fileinfo.filebase, 7)
-    original_trj_file = io.TxtTrajInpFile(original_filename,
+    original_trj_file = files.TxtTrajInpFile(original_filename,
                                        four_domain_struct_inp_file)
     output_chains = output_trj_file.get_chains(2)
     original_chains = original_trj_file.get_chains(2)

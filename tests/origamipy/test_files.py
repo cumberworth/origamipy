@@ -1,12 +1,12 @@
-"""Tests for origamipy.io"""
+"""Tests for origamipy.files"""
 
 import pytest
 
-from origamipy import io
+from origamipy import files
 
 @pytest.fixture
 def txt_traj_inp_file(four_domain_struct_inp_file):
-    return io.TxtTrajInpFile('tests/data/four.trj', four_domain_struct_inp_file)
+    return files.TxtTrajInpFile('tests/data/four.trj', four_domain_struct_inp_file)
 
 def test_get_next_config_from_TxtTrajInpFile(txt_traj_inp_file):
     next(txt_traj_inp_file)
@@ -25,7 +25,7 @@ def test_enumerate_loop_over_TxtTrajInpFile(txt_traj_inp_file):
 
 @pytest.fixture
 def unparsed_trj_file():
-    return io.UnparsedMultiLineStepInpFile('tests/data/four.trj')
+    return files.UnparsedMultiLineStepInpFile('tests/data/four.trj')
 
 def test_next_unparsed_trj_file(unparsed_trj_file):
     next(unparsed_trj_file) != ''
