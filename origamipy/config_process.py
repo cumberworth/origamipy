@@ -1,4 +1,4 @@
-"""Functions for processing configuration files"""
+"""Functions for processing configuration files."""
 
 import numpy as np
 

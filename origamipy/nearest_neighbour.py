@@ -1,5 +1,3 @@
-#!/usr/env python
-
 """Utilities for calculating NN model quantities."""
 
 import math

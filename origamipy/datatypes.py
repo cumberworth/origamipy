@@ -1,4 +1,4 @@
-"""Functions for processing order parameter files"""
+"""Functions for processing order parameter files."""
 
 import numpy as np
 import pandas as pd

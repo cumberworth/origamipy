@@ -1,7 +1,8 @@
+"""Wrapper for the pymbar package."""
+
 import numpy as np
 from pymbar import mbar
 from scipy.signal import argrelextrema
-from scipy import interpolate
 from scipy.optimize import minimize
 
 from origamipy import files
@@ -81,9 +82,6 @@ class MBARWrapper:
 
         if filebase != None:
             header = [se_tag, xtag]
-            conds_tags = all_conds.condition_tags
-            xvar = conds[xtag]
-
             lfes_filebase = f"{filebase}-{se_tag}"
             lfes_file = files.TagOutFile(f"{lfes_filebase}.aves")
             self._write_lfe_series_to_file(lfes_file, header, lfe, bins, 1)
@@ -98,12 +96,7 @@ class MBARWrapper:
 
         Write both LFEs and standard deviations to file.
         """
-        if type(all_conds) == list:
-            conds_tags = all_conds[0].condition_tags
-        else:
-            conds_tags = all_conds.condition_tags
         xvars = [c[xtag] for c in all_conds]
-
         for se_tag in se_tags:
             lfes = []
             stds = []
@@ -128,9 +121,11 @@ class MBARWrapper:
         """Calculate 2D LFEs and stds for given op and conditions.
 
         Write both LFEs and standard deviations to file.
+
+        Needs fixing.
         """
-        set_tag_1 = se_tag_pair[0]
-        set_tag_2 = se_tag_pair[1]
+        se_tag_1 = se_tag_pair[0]
+        se_tag_2 = se_tag_pair[1]
         series_1 = self._decor_outs.get_concatenated_series(se_tag_1)
         series_2 = self._decor_outs.get_concatenated_series(se_tag_2)
         series_pairs = list(zip(series_1, series_2))
@@ -152,14 +147,16 @@ class MBARWrapper:
         """Calculate 2D LFEs for given ops and conditions.
 
         Write both LFEs and standard deviations to file.
+        
+        Needs fixing.
         """
         conds_tags = reduced_conditions.condition_tags
         xvar_i = conds_tags.index(xtag)
         xvars = [c[xvar_i] for c in all_conds]
 
         for se_tag_pair in se_tag_pairs:
-            set_tag_1 = se_tag_pair[0]
-            set_tag_2 = se_tag_pair[1]
+            se_tag_1 = se_tag_pair[0]
+            se_tag_2 = se_tag_pair[1]
             lfes = []
             stds = []
             series_1 = self._decor_outs.get_concatenated_series(se_tag_1)
@@ -189,6 +186,7 @@ class MBARWrapper:
         series = self._decor_outs.get_concatenated_series("numfullyboundstaples")
         bins = list(set(series))
         bins.sort()
+        # Fix
         melting_temp = minimize(
             self._squared_barrier_diff, guess_temp, args=(bins, series, conds)
         ).x[0]

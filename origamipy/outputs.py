@@ -1,7 +1,5 @@
 """Collections of simulation and enumeration outputs."""
 
-import os.path
-
 import numpy as np
 
 from origamipy import datatypes
@@ -94,7 +92,6 @@ class SimCollection:
         return self._datatype[dt_tag]
 
     def get_trj(self, trj_tag):
-        all_trjs = []
         if trj_tag not in self._trjtype.keys():
             self._load_runs_trj(trj_tag)
 
@@ -269,6 +266,7 @@ class SimpleSimCollection:
         self._datatype = {}
         self._trjtype = {}
 
+    # why is this flag not used?
     def get_data(self, tag, concatenate=True):
         if tag not in self._datatype.keys():
             self._datatype[tag] = self._load_data(tag)
@@ -293,13 +291,13 @@ class SimpleSimCollection:
         if trj_tag not in self._trjtype.keys():
             self._trjtype[trj_tag] = self._load_trj(trj_tag)
 
-        return self._trjtype[tag]
+        return self._trjtype[trj_tag]
 
     def _load_trj(self, trj_tag):
-        filename = f"{self.filebase}.{tag}"
+        filename = f"{self.filebase}.{trj_tag}"
         if trj_tag in ["trj", "vcf"]:
             trj = files.UnparsedMultiLineStepInpFile(filename, 0)
-        elif tag in ["ores", "states"]:
+        elif trj_tag in ["ores", "states"]:
             trj = files.UnparsedSingleLineStepInpFile(filename, 0)
         else:
             NotImplementedError

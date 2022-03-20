@@ -1,8 +1,5 @@
 """Methods for decorrelating simulation results."""
 
-import copy
-import math
-
 import numpy as np
 from pymbar import timeseries
 

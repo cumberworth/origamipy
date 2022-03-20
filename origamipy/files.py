@@ -1,4 +1,4 @@
-"""IO classes for origami system information, topologies, and configurations"""
+"""IO classes for origami system information, topologies, and configurations."""
 
 import collections
 import json

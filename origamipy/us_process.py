@@ -1,11 +1,7 @@
 """Functions for preparing and processing US simulations"""
 
 import copy
-import json
-from operator import itemgetter
 import random
-
-import numpy as np
 
 
 def create_win_filename(win, filebase, ext):
