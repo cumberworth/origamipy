@@ -9,7 +9,6 @@ import sys
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib import ticker
-from matplotlibstyles import styles
 from matplotlibstyles import plotutils
 import numpy as np
 import pandas as pd
@@ -136,7 +135,7 @@ class LFEsPlot(Plot):
         ax.set_xlabel(xlabel)
         ax.set_ylim(bottom=ylim_bottom, top=ylim_top)
         ax.set_xlim(right=xlim_right)
-        ax.set_title(title)
+        ax.set_title(title, loc="left")
 
 
 class LFEsOPsPlot(Plot):
@@ -235,19 +234,22 @@ class LFEsFullDomainsFullyBoundStaplesPlot(Plot):
         ylim_top=None,
         title=None,
     ):
+        cmap = cm.get_cmap("tab10")
         ax = axes[0]
         ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         ax.set_ylabel(ylabel)
-        ax.set_xlabel(xlabel_bottom)
-        ax.set_title(title)
+        ax.set_xlabel(xlabel_bottom, color=cmap(0))
+        ax.tick_params(axis="x", colors=cmap(0))
+        ax.set_title(title, loc="left")
 
         ax = axes[1]
         ax.spines.top.set_visible(True)
         ax.spines.bottom.set_visible(False)
         ax.spines.left.set_visible(False)
         ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=7))
-        ax.set_xlabel(xlabel_top)
         ax.set_ylim(bottom=ylim_bottom, top=ylim_top)
+        ax.tick_params(axis="x", colors=cmap(1))
+        ax.set_xlabel(xlabel_top, color=cmap(1))
 
 
 class LFEsRepTempsPlot(Plot):
@@ -333,18 +335,21 @@ class LFEsRepTempsPlot(Plot):
         ylim_top=None,
         title=None,
     ):
+        cmap = cm.get_cmap("tab10")
         ax = axes[0]
         ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         ax.set_ylabel(ylabel)
-        ax.set_xlabel(xlabel_bottom)
-        ax.set_title(title)
+        ax.set_xlabel(xlabel_bottom, color=cmap(0))
+        ax.tick_params(axis="x", colors=cmap(0))
+        ax.set_title(title, loc="left")
 
         ax = axes[1]
         ax.spines.top.set_visible(True)
         ax.spines.bottom.set_visible(False)
         ax.spines.left.set_visible(False)
         ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=7))
-        ax.set_xlabel(xlabel_top)
+        ax.tick_params(axis="x", colors=cmap(1))
+        ax.set_xlabel(xlabel_top, color=cmap(1))
 
         ax.set_ylim()
         ax.set_ylim([ylim_bottom, ylim_top])

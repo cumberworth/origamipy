@@ -5,7 +5,6 @@
 
 import argparse
 import json
-import os.path
 
 import numpy as np
 
@@ -15,8 +14,6 @@ from origamipy import config_process
 from origamipy import datatypes
 from origamipy import files
 from origamipy import outputs
-from origamipy import decorrelate
-from origamipy import mbar_wrapper
 from origamipy import us_process
 
 
@@ -34,8 +31,8 @@ def main():
         trj_filename = "{}.trj".format(sim_collection.filebase)
         trj_file = files.TxtTrajInpFile(trj_filename, system_file)
         ops = datatypes.OrderParams.from_file(sim_collection.filebase)
-        all_dists = [[] for i in range(len(domain_pairs))]
-        for i, step in enumerate(trj_file):
+        all_dists = [[] for _ in range(len(domain_pairs))]
+        for _, step in enumerate(trj_file):
             config = np.array(step[0]["positions"])
             for j, domain_pair in enumerate(domain_pairs):
                 pos_i = config[domain_pair[0]]
@@ -70,7 +67,7 @@ def construct_fileformatter():
     return conditions.ConditionsFileformatter(specs)
 
 
-def construct_conditions(args, fileformatter, inp_filebase, system_file):
+def construct_conditions(args, fileformatter, inp_filebase):
     bias_tags, windows = us_process.read_windows_file(args.windows_filename)
     bias_functions = json.load(open(args.bias_functions_filename))
     op_tags = us_process.get_op_tags_from_bias_functions(bias_functions, bias_tags)

@@ -40,7 +40,7 @@ def create_window_filebases(wins, filebase):
 
 
 def read_windows_file(filename):
-    """Read windows file and return list of tuple of min max tuples"""
+    """Read windows file and return list of tuple of min max tuples."""
     with open(filename) as inp:
         lines = inp.readlines()
 
@@ -67,7 +67,6 @@ def get_op_tags_from_bias_functions(bias_functions, bias_tags):
 
 
 def get_all_points(win, point, points, comp):
-    """NOT REALLY SURE"""
     if len(point) == len(win[0]):
         points.append(tuple(point))
     else:

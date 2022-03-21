@@ -1,6 +1,7 @@
 # Supporting python modules for the LatticeDNAOrigami simulation program
 
 Python package for analysis, visualization, and support for the LatticeDNAOrigami simulation program.
+This package is part of the replication package for Ref. 1.
 
 Some example scripts for creating plots are provided in the [`scripts`](scripts/) directory.
 
@@ -27,10 +28,10 @@ For more information on building and installing python packages, see the documen
 
 ## References
 
-[1] A. Cumberworth, A. Reinhardt, and D. Frenkel, The role of nucleation barriers in the folding of DNA origami: a numerical study.
+[1] A. Cumberworth, D. Frenkel, and A. Reinhardt, The role of nucleation barriers in the folding of DNA origami: a numerical study.
 
 ## Links
 
-[Python Packaging Authority](https://packaging.python.org/en/latest/)
-
 [LatticeDNAOrigami](https://github.com/cumberworth/LatticeDNAOrigami)
+
+[Python Packaging Authority](https://packaging.python.org/en/latest/)

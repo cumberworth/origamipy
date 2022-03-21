@@ -1,4 +1,11 @@
-"""Wrapper for the pymbar package."""
+"""Wrapper for the mbar module of the pymbar package.
+
+It applied to collections of decorrelated simulations, and uses the conditions
+information to perform the mbar analysis and then calculate free energies and
+thermodynamic averages for desired thermodynamic states.
+
+There are also functions for calculating barriers from LFEs.
+"""
 
 import numpy as np
 from pymbar import mbar

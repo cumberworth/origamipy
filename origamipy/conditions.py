@@ -1,4 +1,10 @@
-"""Simulation conditions."""
+"""Simulation conditions.
+
+The classes and functions here are an attempt to group together related simulations
+with different conditions, e.g. temperatures or bias functions, such that they can be
+mor easily processed together with the MBAR method, which can combine results from
+across different conditions.
+"""
 
 import collections
 import itertools
@@ -16,6 +22,8 @@ ConditionsFileformatSpec = collections.namedtuple(
 
 
 class ConditionsFileformatter:
+    """Create the string used in the file base from the given conditions."""
+
     def __init__(self, spec):
         self._spec = spec
 
@@ -37,12 +45,15 @@ class ConditionsFileformatter:
 
 
 class SimConditions:
+    """Conditions for a particular simulation."""
     def __init__(self, conditions, fileformat, staple_lengths):
         self._conditions = conditions
         self._fileformat = fileformat
         self._total_bias = None
 
         self._construct_total_bias()
+
+        # See Ref. 2 or Ref.3 in the README to understand this term
         self._u_extra_states_term = (2 * staple_lengths - 1) * np.log(6)
 
     def _construct_total_bias(self):

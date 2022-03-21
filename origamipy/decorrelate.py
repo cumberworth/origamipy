@@ -1,4 +1,8 @@
-"""Methods for decorrelating simulation results."""
+"""Methods for decorrelating simulation results.
+
+This essentially wraps the relevant parts of the timeseries module from the pymbar
+package.
+"""
 
 import numpy as np
 from pymbar import timeseries

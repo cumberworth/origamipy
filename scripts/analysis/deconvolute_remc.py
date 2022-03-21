@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
-"""Deconvolute a 1D temperature REMC simulation."""
+"""Deconvolute a temperature REMC simulation."""
 
 import argparse
 

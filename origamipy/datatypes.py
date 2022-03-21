@@ -1,10 +1,18 @@
-"""Functions for processing order parameter files."""
+"""Wrappers for column-based text output files from LatticeDNAOrigami simulations.
+
+These are convenience wrappers for these file types. Much of this could be done directly
+with pandas, but some file types require processing before use, and there is some
+general functionality like concatenating files across runs, or continuations of a
+simulation, that can be shared here.
+"""
 
 import numpy as np
 import pandas as pd
 
 
 class EnumerationWeights:
+    """Enumeration output weights file type."""
+
     def __init__(self, filename):
         self._tags, self._dataframe = self._read_weights_from_file(filename)
 
@@ -63,7 +71,7 @@ class EnumerationWeights:
 
 
 class OutputData:
-    """Base class for output datatypes"""
+    """Base class for output datatypes."""
 
     @classmethod
     def from_file(cls, filebase):
@@ -170,6 +178,12 @@ class OutputData:
 
 
 class Energies(OutputData):
+    """Energies output file type.
+
+    The energies are saved in units of kb T, but here the energies are processed with
+    units of kb K.
+    """
+
     _ext = "ene"
     _header_lines = 1
     _dtype = np.float
@@ -186,7 +200,7 @@ class Energies(OutputData):
 
     def _multiply_energy_by_temp(self, temp):
 
-        # Energy are written in units of be k_b / K
+        # Energy are written in units of be k_b T
         self["tenergy"] = self["tenergy"] * temp
         self["henthalpy"] = self["henthalpy"] * temp
         self["stacking"] = self["stacking"] * temp
@@ -197,7 +211,7 @@ class Energies(OutputData):
 
     def _divide_energy_by_temp(self, temp):
 
-        # Energy are written in units of be k_b / K
+        # Energy are written in units of be k_b T
         self["tenergy"] = self["tenergy"] / temp
         self["henthalpy"] = self["henthalpy"] / temp
         self["stacking"] = self["stacking"] / temp
@@ -224,6 +238,8 @@ class Energies(OutputData):
 
 
 class OrderParams(OutputData):
+    """Order parameters output file type."""
+
     _ext = "ops"
     _header_lines = 1
     _dtype = np.int
@@ -239,6 +255,8 @@ class OrderParams(OutputData):
 
 
 class Times(OutputData):
+    """Times output file type."""
+
     _ext = "times"
     _header_lines = 1
     _dtype = np.float
@@ -246,6 +264,8 @@ class Times(OutputData):
 
 
 class NumStaplesOfType(OutputData):
+    """Staples output file type."""
+
     _ext = "staples"
     _header_lines = 0
     _dtype = np.int
@@ -261,6 +281,8 @@ class NumStaplesOfType(OutputData):
 
 
 class StapleTypeStates(OutputData):
+    """Staple states output file type."""
+
     _ext = "staplestates"
     _header_lines = 0
     _dtype = np.int

@@ -1,9 +1,15 @@
-"""Analysis of REMC simulations"""
+"""Analysis of REMC simulations."""
 
 from origamipy import files
 
 
 def deconvolute_remc_outputs(all_exchange_params, fileinfo, filetypes):
+    """Deconvolute all output files from a replia exchange simuation.
+
+    The files will be written to disk, where the provided strings in exchange_params
+    are appended to the filebase with a hyphen. The order of the parameter combinations
+    must much the initial state when the thread and replica indices are equal.
+    """
     swapfile = files.SwapInpFile(fileinfo.inputdir, fileinfo.filebase)
     for filetype in filetypes:
         f_collection = FileCollection(all_exchange_params, fileinfo, filetype)

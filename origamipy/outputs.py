@@ -1,4 +1,14 @@
-"""Collections of simulation and enumeration outputs."""
+"""Collections of simulation and enumeration outputs.
+
+These classes collect the output files from a simulation. The primary purpose of the
+classes is to allow the MBAR method to be applied to the outputs of the
+LatticeDNAOrigami simulation program.
+
+The classses have facilities for collecting the raw outputs of the simulation for
+running the decorrelation, which may involve concatenating across multiple runs (which
+are continuations/restarts of a given simulation), as well as collecting the
+decorrelated outputs of a simulation.
+"""
 
 import numpy as np
 
@@ -7,6 +17,8 @@ from origamipy import files
 
 
 class EnumCollection:
+    """Enumeration outputs."""
+
     def __init__(self, filebase, all_conditions):
         self._filebase = filebase
         self._all_conditions = all_conditions
@@ -64,7 +76,7 @@ def create_sim_collections(
 
 
 class SimCollection:
-    """A single condition of a simulation."""
+    """A single simulation."""
 
     filebase_template = "{}_run-{}_rep-{}{}"
     decor_filebase_template = "{}_run-{}-{}_rep-{}{}_decor"

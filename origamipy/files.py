@@ -1,4 +1,8 @@
-"""IO classes for origami system information, topologies, and configurations."""
+"""Classes for origami system information, topologies, and configurations.
+
+Output data file types that are in a column-based format with each row being an entry
+for a step are handled in the datatypes module.
+"""
 
 import collections
 import json
@@ -74,6 +78,8 @@ class JSONStructOutFile:
 
 
 class StepsInpFile:
+    """Base class for input files that have an entry for multiple steps."""
+
     def __init__(self, filename):
         self._filename = filename
         self._line = ""
@@ -243,6 +249,8 @@ class VCFOutFile:
 
 
 class SwapInpFile(StepsInpFile):
+    """REMC swap file."""
+
     def __init__(self, inputdir, filebase):
         filename = self._create_filename(inputdir, filebase)
         super().__init__(filename)
@@ -275,7 +283,7 @@ class SwapInpFile(StepsInpFile):
 
 
 class UnparsedStepInpFile(StepsInpFile):
-    """Read steps in single string chunks."""
+    """Base class for reading steps in single string chunks."""
 
     def __init__(self, filename, headerlines=0):
         super().__init__(filename)
@@ -348,6 +356,8 @@ class UnparsedSingleLineStepInpFile(UnparsedStepInpFile):
 
 
 class TagOutFile:
+    """Generic file with header and columns of data, where each row is an step entry."""
+
     def __init__(self, filename):
         self._filename = filename
 
@@ -381,6 +391,7 @@ class StatesInpFile(StepsInpFile):
 
 
 def read_expectations(filebase):
+    """Wrapper for pandas for simple text data files with header."""
     aves_filename = "{}.aves".format(filebase)
     aves = pd.read_csv(aves_filename, sep=" ")
     stds_filename = "{}.stds".format(filebase)

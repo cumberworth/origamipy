@@ -1,4 +1,13 @@
-"""Bias functions."""
+"""Bias functions.
+
+The classes here are intended to mirror some of the biases in the LatticeDNAOrigami
+program, but also can include additional biases for using the MBAR method to extrapolate
+to other thermodynamic states.
+
+All bias classes should implement __call__(temp, order_parameters), and return the bias
+in units of kb K. They should also implmement the propery fileformat_value to be some
+or something trivially convertiable to a string (e.g. an int).
+"""
 
 import json
 
@@ -9,6 +18,7 @@ STACK_TAG = "numstackedpairs"
 
 
 class NoBias:
+    """Null bias function that returns 0."""
     def __call__(self, *args):
         return 0
 
@@ -18,6 +28,7 @@ class NoBias:
 
 
 class StackingBias:
+    """Bias for the stacking energy based on a multiplier."""
     def __init__(self, stack_energy, stack_mult):
         self._stack_energy = stack_energy
         self._stack_mult = stack_mult
@@ -33,6 +44,14 @@ class StackingBias:
 
 
 class HybridizationBias:
+    """Bias for the average hybridization energy.
+
+    The entropy is multiplied by temperature so that it can return the energy in units
+    of kb K. This is because I end up dividing the bias by temperature later, as all
+    biases before this one were plain energies, while here it is has an entropic
+    component, which should not be divided by temperature to get the unitless exponent
+    for the ensemble distribution.
+    """
     def __init__(self, bindh, binds, misbindh, misbinds, hyb_mult):
         self._bindh = bindh
         self._binds = binds
@@ -59,7 +78,8 @@ class GridBias:
     """Grid bias with linear step well outside grid.
 
     It assumes that the input bias is desired, not the bias calculated for that
-    iteration.
+    iteration. The biases are written in kb T, so here the energy is multiplied by
+    temperature as the bias is later divided by temperature.
     """
 
     def __init__(self, tags, window, min_outside_bias, slope, inp_filebase, itr):
@@ -118,6 +138,7 @@ class GridBias:
 
 
 class TotalBias:
+    """Sum of all individual biases."""
     def __init__(self, biases):
         self._biases = biases
 
