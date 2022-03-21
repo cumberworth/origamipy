@@ -1,8 +1,4 @@
-"""Methods for decorrelating simulation results.
-
-This essentially wraps the relevant parts of the timeseries module from the pymbar
-package.
-"""
+"""Wraps the relevant parts of the timeseries module from the pymbar package."""
 
 import numpy as np
 from pymbar import timeseries
@@ -15,7 +11,12 @@ NUM_STAPLES_TAG = "numstaples"
 
 
 class DecorrelatedOutputs:
-    """Represents decorrelated outputs of a simulation."""
+    """Represents decorrelated outputs of a simulation.
+
+    This combines the collections for each simulation and provides functionality for
+    decorrelating them and convenient ways to access the data for the MBAR wrapper
+    class.
+    """
 
     _datatypes = ["enes", "ops", "staples", "staplestates"]
     _trjtypes = ["trj", "vcf", "ores", "states"]
