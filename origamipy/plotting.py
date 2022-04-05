@@ -51,6 +51,7 @@ class Plot:
 
     def __init__(self, args):
         self._args = args
+        self._title = None
 
     def set_labels(self, ax):
         plt.legend()
@@ -108,7 +109,7 @@ class LFEsPlot(Plot):
 
         if stacking_enes is not None:
             ax.set_title(" ")
-            label = r"$-U_\text{stack} / \SI{1000}{\kb\kelvin}$"
+            label = r"$U_\text{stack}$ multiplier"
             tick_labels = [
                 f"${stacking_enes[0]/1000:.1f}$",
                 f"${stacking_enes[1]/1000:.2f}$",
@@ -180,7 +181,7 @@ class LFEsOPsPlot(Plot):
         ax.set_xlabel(xlabel)
         ax.set_ylim(bottom=ylim_bottom, top=ylim_top)
         ax.set_xlim(right=xlim_right)
-        ax.set_title(title)
+        ax.set_title(title, loc="left")
 
 
 class LFEsFullDomainsFullyBoundStaplesPlot(Plot):
@@ -192,7 +193,7 @@ class LFEsFullDomainsFullyBoundStaplesPlot(Plot):
         input_dir = self._args["input_dir"]
         post_lfes = self._args["post_lfes"]
         tags = ["numfullyboundstaples", "numfulldomains"]
-        labels = ["Fully bound staples", "Bound domains"]
+        labels = ["Fully-bound staples", "Bound-domain pairs"]
 
         cmap = cm.get_cmap("tab10")
         for i, tag in enumerate(tags):
@@ -263,7 +264,7 @@ class LFEsRepTempsPlot(Plot):
         cmap = cm.get_cmap("tab10")
         markers = ["^", "s", "o"]
         tags = ["numfullyboundstaples", "numfulldomains"]
-        labels = ["Fully bound staples", "Bound domains"]
+        labels = ["Fully-bound staples", "Bound-domain pairs"]
 
         for j, tag in enumerate(tags):
             if tag == "numfulldomains":
@@ -292,8 +293,7 @@ class LFEsRepTempsPlot(Plot):
                     color=cmap(j),
                     label=labels[j],
                 )
-                if j == 0:
-                    ax.set_title(f"$T = {temps[temp_indices]:.3f}$")
+                self._title = f"$T = {temps[temp_indices]:.3f}$"
             else:
                 for i, k in enumerate(temp_indices):
                     ax.errorbar(
@@ -341,7 +341,10 @@ class LFEsRepTempsPlot(Plot):
         ax.set_ylabel(ylabel)
         ax.set_xlabel(xlabel_bottom, color=cmap(0))
         ax.tick_params(axis="x", colors=cmap(0))
-        ax.set_title(title, loc="left")
+        if self._title is not None:
+            ax.set_title(title + self._title, loc="left")
+        else:
+            ax.set_title(title, loc="left")
 
         ax = axes[1]
         ax.spines.top.set_visible(True)
@@ -403,7 +406,10 @@ class MeansPlot(Plot):
             else:
                 contin = False
 
-            ax.axhline(assembled_value, linestyle="--", color=cmap(i))
+            if system in ["snodin", "16nt-halftile-3-a-0"]:
+                ax.axhline(assembled_value, linestyle="--", color=cmap(i))
+            elif system == "halfturn-2-9":
+                ax.axhline(assembled_value, linestyle="--", color="0.4")
 
             inp_filebase = f"{input_dir}/{system}-{vari}{post}"
             all_aves, all_stds = files.read_expectations(inp_filebase)
@@ -497,7 +503,7 @@ class MeansStackPlot(Plot):
             temp = all_aves["temp"]
             ax.errorbar(temp, mean, yerr=std, marker="o", color="0.4")
 
-        label = r"$-U_\text{stack} / \SI{1000}{\kb\kelvin}$"
+        label = r"$U_\text{stack}$ multiplier"
         tick_labels = [
             f"${stacking_enes[0]/1000:.1f}$",
             f"${stacking_enes[1]/1000:.2f}$",
@@ -510,7 +516,7 @@ class MeansStackPlot(Plot):
         )
 
     def setup_axis(self, ax, ylabel, title=None):
-        ax.set_title(title)
+        ax.set_title(title, loc="left")
         ax.set_xlabel(r"$T / K$")
         ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         ax.set_ylabel(ylabel)
@@ -558,17 +564,23 @@ class NumFullyBoundStaplesFreqsPlot(Plot):
             if titles is not None:
                 ax.set_title(titles[i], loc="left")
 
-    def set_labels(self, f, axes):
+    def set_labels(self, f, axes, fraction=0.15, aspect=20):
         cmap = cm.get_cmap("viridis")
         mappable = plotutils.create_linear_mappable(cmap, 0, 1)
-        cbar = f.colorbar(mappable, ax=axes, orientation="horizontal")
-        cbar.set_label("Fraction with fully bound staple")
+        cbar = f.colorbar(
+            mappable,
+            ax=axes,
+            orientation="horizontal",
+            fraction=fraction,
+            aspect=aspect,
+        )
+        cbar.set_label("Expected staple state")
 
 
 class NumFullyBoundStaplesBarriersPlot(Plot):
     """Plot forward and reverse barriers of numfullyboundstaples vs temprature."""
 
-    def plot_figure(self, ax):
+    def plot_figure(self, ax, include_reverse=False):
         input_dir = self._args["input_dir"]
         filebase = self._args["filebase"]
 
@@ -610,10 +622,16 @@ class NumFullyBoundStaplesBarriersPlot(Plot):
         ax.fill_between(
             temps, s_f_barriers + s_f_stds, s_f_barriers - s_f_stds, color="0.8"
         )
-        lines.extend(ax.plot(temps, s_r_barriers))
-        ax.fill_between(
-            temps, s_r_barriers + s_r_stds, s_r_barriers - s_r_stds, color="0.8"
-        )
+        if include_reverse:
+            lines.extend(ax.plot(temps, s_r_barriers))
+            ax.fill_between(
+                temps, s_r_barriers + s_r_stds, s_r_barriers - s_r_stds, color="0.8"
+            )
+
+        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfullyboundstaples.aves", sep=" ", index_col=0)
+        melting_temp = float(melting_lfes.columns[0])
+        ax.set_xticks([353, melting_temp, 356])
+        ax.set_xticklabels(["353", r"$T_\textrm{m}$", "356"])
 
         return lines
 
@@ -624,13 +642,13 @@ class NumFullyBoundStaplesBarriersPlot(Plot):
         ax.set_xlabel(xlabel)
         ax.set_ylim(bottom=ylim_bottom)
         ax.set_ylim(top=ylim_top)
-        ax.set_title(title)
+        ax.set_title(title, loc="left")
 
 
 class NumFullDomainsBarriersPlot(Plot):
     """Plot forward and reverse barriers of numfulldomains vs temprature."""
 
-    def plot_figure(self, ax):
+    def plot_figure(self, ax, include_reverse=False):
         input_dir = self._args["input_dir"]
         filebase = self._args["filebase"]
 
@@ -680,10 +698,16 @@ class NumFullDomainsBarriersPlot(Plot):
         ax.fill_between(
             temps, d_f_barriers + d_f_stds, d_f_barriers - d_f_stds, color="0.8"
         )
-        lines.extend(ax.plot(temps, d_r_barriers))
-        ax.fill_between(
-            temps, d_r_barriers + d_r_stds, d_r_barriers - d_r_stds, color="0.8"
-        )
+        if include_reverse:
+            lines.extend(ax.plot(temps, d_r_barriers))
+            ax.fill_between(
+                temps, d_r_barriers + d_r_stds, d_r_barriers - d_r_stds, color="0.8"
+            )
+
+        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfulldomains.aves", sep=" ", index_col=0)
+        melting_temp = float(melting_lfes.columns[0])
+        ax.set_xticks([350, melting_temp, 360])
+        ax.set_xticklabels(["350", r"$T_\textrm{m}$", "360"])
 
         return lines
 
@@ -694,7 +718,7 @@ class NumFullDomainsBarriersPlot(Plot):
         ax.set_xlabel(xlabel)
         ax.set_ylim(bottom=ylim_bottom)
         ax.set_ylim(top=ylim_top)
-        ax.set_title(title)
+        ax.set_title(title, loc="left")
 
 
 class NumFullyBoundStaplesBarrierLocationPlot(Plot):
@@ -719,6 +743,11 @@ class NumFullyBoundStaplesBarrierLocationPlot(Plot):
 
         temps = np.array(s_lfes.columns, dtype=float)
         ax.plot(temps, s_barrier_is, color="0.4")
+
+        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfullyboundstaples.aves", sep=" ", index_col=0)
+        melting_temp = float(melting_lfes.columns[0])
+        ax.set_xticks([353, melting_temp, 356])
+        ax.set_xticklabels(["353", r"$T_\textrm{m}$", "356"])
 
     def setup_axis(self, ax, xlabel=None, ylim_top=None):
         ax.set_ylabel("Staples")
@@ -755,6 +784,11 @@ class NumFullDomainsBarrierLocationPlot(Plot):
         temps = np.array(d_lfes.columns, dtype=float)
         ax.plot(temps, d_barrier_is, color="0.4")
         ax.axhline(27, linestyle="--", color="0.4")
+
+        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfulldomains.aves", sep=" ", index_col=0)
+        melting_temp = float(melting_lfes.columns[0])
+        ax.set_xticks([350, melting_temp, 360])
+        ax.set_xticklabels(["350", r"$T_\textrm{m}$", "360"])
 
     def setup_axis(self, ax, xlabel=None, ylim_top=None):
         ax.set_ylabel("Domains")
