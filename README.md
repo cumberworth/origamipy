@@ -28,7 +28,7 @@ For more information on building and installing python packages, see the documen
 
 ## References
 
-[1] A. Cumberworth, D. Frenkel, and A. Reinhardt, The role of nucleation barriers in the folding of DNA origami: a numerical study.
+[1] A. Cumberworth, D. Frenkel, and A. Reinhardt, Simulations of DNA-origami self-assembly reveal design-dependent nucleation barriers.
 
 ## Links
 
