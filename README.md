@@ -1,5 +1,7 @@
 # Supporting python modules for the LatticeDNAOrigami simulation program
 
+[![DOI](https://zenodo.org/badge/462343465.svg)](https://zenodo.org/badge/latestdoi/462343465)
+
 Python package for analysis, visualization, and support for the LatticeDNAOrigami simulation program.
 This package is part of the replication package for Ref. 1.
 

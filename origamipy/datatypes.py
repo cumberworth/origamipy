@@ -112,7 +112,7 @@ class OutputData:
     def concatenate(cls, output_data_list):
         data = output_data_list[-1]
 
-        # UGLY HACK TO CUT EXTRA COLUMSN IN OPS
+        # UGLY HACK TO CUT EXTRA COLUMNS IN OPS
         cols = len(data._tags)
         data_list = [d._data[:cols] for d in output_data_list]
         concatenated_data = np.concatenate(data_list, axis=1)
