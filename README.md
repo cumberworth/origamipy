@@ -1,6 +1,6 @@
 # Supporting python modules for the LatticeDNAOrigami simulation program
 
-[![DOI](https://zenodo.org/badge/462343465.svg)](https://zenodo.org/badge/latestdoi/462343465)
+[![DOI](https://zenodo.org/badge/462343464.svg)](https://zenodo.org/badge/latestdoi/462343464)
 
 Python package for analysis, visualization, and support for the LatticeDNAOrigami simulation program.
 This package is part of the replication package for Ref. 1.
@@ -30,7 +30,7 @@ For more information on building and installing python packages, see the documen
 
 ## References
 
-[1] A. Cumberworth, D. Frenkel, and A. Reinhardt, Simulations of DNA-origami self-assembly reveal design-dependent nucleation barriers.
+[1] A. Cumberworth, D. Frenkel, and A. Reinhardt, Simulations of DNA-origami self-assembly reveal design-dependent nucleation barriers (2022).
 
 ## Links
 
