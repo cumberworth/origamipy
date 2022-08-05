@@ -10,7 +10,7 @@ Some example scripts for creating plots are provided in the [`scripts`](scripts/
 ## Installation
 
 This package was developed and used on Linux.
-[It is available on the PyPI respository](https://pypi.org/project/origampy/).
+[It is available on the PyPI respository](https://pypi.org/project/origamipy/).
 It can be installed by running
 ```
 pip install origamipy
@@ -33,6 +33,10 @@ For more information on building and installing python packages, see the documen
 [1] A. Cumberworth, D. Frenkel, and A. Reinhardt, Simulations of DNA-origami self-assembly reveal design-dependent nucleation barriers (2022).
 
 ## Links
+
+[Paper](https://doi.org/10.48550/arXiv.2204.02499)
+
+[Replication package](https://doi.org/10.5281/zenodo.6414264)
 
 [LatticeDNAOrigami](https://github.com/cumberworth/LatticeDNAOrigami)
 
