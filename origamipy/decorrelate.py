@@ -220,7 +220,11 @@ class DecorrelatedOutputs:
         rpots = utility.calc_reduced_potentials(
             enes, ops, num_staples, sim_collection.conditions
         )
-        if g != None:
+        if g != None and detect_equil:
+            start_i, gcalc, Neffcalc = timeseries.detectEquilibration(rpots, nskip=skip)
+            indices = timeseries.subsampleCorrelatedData(rpots[start_i:], g=skip * g)
+            Neff = len(indices)
+        elif g != None and not detect_equil:
             start_i = 0
             indices = timeseries.subsampleCorrelatedData(rpots, g=skip * g)
             Neff = len(indices)

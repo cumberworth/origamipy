@@ -60,7 +60,7 @@ class Plot:
 class LFEsPlot(Plot):
     """LFEs along given order parameter for multiple simulations."""
 
-    def plot_figure(self, f, ax):
+    def plot_figure(self, f, ax, colorbar=True):
         systems = self._args["systems"]
         varis = self._args["varis"]
         input_dir = self._args["input_dir"]
@@ -107,9 +107,9 @@ class LFEsPlot(Plot):
                 color=colors[i],
             )
 
-        if stacking_enes is not None:
+        if stacking_enes is not None and colorbar == True:
             ax.set_title(" ")
-            label = r"$U_\text{stack}$ multiplier"
+            label = r"Stacking multiplier"
             tick_labels = [
                 f"${stacking_enes[0]/1000:.1f}$",
                 f"${stacking_enes[1]/1000:.2f}$",
@@ -130,13 +130,15 @@ class LFEsPlot(Plot):
         ylim_top=None,
         xlim_right=None,
         title=None,
+        pad=None,
     ):
         ax.xaxis.set_major_locator(ticker.MaxNLocator(integer=True))
         ax.set_ylabel(ylabel)
         ax.set_xlabel(xlabel)
         ax.set_ylim(bottom=ylim_bottom, top=ylim_top)
         ax.set_xlim(right=xlim_right)
-        ax.set_title(title, loc="left")
+        if pad is not None:
+            ax.set_title(title, loc="left", pad=pad)
 
 
 class LFEsOPsPlot(Plot):
@@ -296,12 +298,17 @@ class LFEsRepTempsPlot(Plot):
                 self._title = f"$T = {temps[temp_indices]:.3f}$"
             else:
                 for i, k in enumerate(temp_indices):
+                    if include_mean:
+                        color = plotutils.darken_color(cmap(j)[:-1], 1.3)
+                    else:
+                        color = cmap(j)
+
                     ax.errorbar(
                         replica_aves.index,
                         replica_aves.iloc[:, k],
                         yerr=replica_stds.iloc[:, k],
                         marker=markers[i],
-                        color=plotutils.darken_color(cmap(j)[:-1], 1.3),
+                        color=color,
                     )
                     # color=mappable.to_rgba(temps[i]))
 
@@ -503,7 +510,7 @@ class MeansStackPlot(Plot):
             temp = all_aves["temp"]
             ax.errorbar(temp, mean, yerr=std, marker="o", color="0.4")
 
-        label = r"$U_\text{stack}$ multiplier"
+        label = r"Stacking multiplier"
         tick_labels = [
             f"${stacking_enes[0]/1000:.1f}$",
             f"${stacking_enes[1]/1000:.2f}$",
@@ -564,7 +571,7 @@ class NumFullyBoundStaplesFreqsPlot(Plot):
             if titles is not None:
                 ax.set_title(titles[i], loc="left")
 
-    def set_labels(self, f, axes, fraction=0.15, aspect=20):
+    def set_labels(self, f, axes, fraction=0.15, aspect=20, shrink=1):
         cmap = cm.get_cmap("viridis")
         mappable = plotutils.create_linear_mappable(cmap, 0, 1)
         cbar = f.colorbar(
@@ -573,6 +580,7 @@ class NumFullyBoundStaplesFreqsPlot(Plot):
             orientation="horizontal",
             fraction=fraction,
             aspect=aspect,
+            shrink=1,
         )
         cbar.set_label("Expected staple state")
 
@@ -628,7 +636,11 @@ class NumFullyBoundStaplesBarriersPlot(Plot):
                 temps, s_r_barriers + s_r_stds, s_r_barriers - s_r_stds, color="0.8"
             )
 
-        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfullyboundstaples.aves", sep=" ", index_col=0)
+        melting_lfes = pd.read_csv(
+            f"{input_dir}/{filebase}_lfes-melting-numfullyboundstaples.aves",
+            sep=" ",
+            index_col=0,
+        )
         melting_temp = float(melting_lfes.columns[0])
         ax.set_xticks([353, melting_temp, 356])
         ax.set_xticklabels(["353", r"$T_\textrm{m}$", "356"])
@@ -704,7 +716,11 @@ class NumFullDomainsBarriersPlot(Plot):
                 temps, d_r_barriers + d_r_stds, d_r_barriers - d_r_stds, color="0.8"
             )
 
-        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfulldomains.aves", sep=" ", index_col=0)
+        melting_lfes = pd.read_csv(
+            f"{input_dir}/{filebase}_lfes-melting-numfulldomains.aves",
+            sep=" ",
+            index_col=0,
+        )
         melting_temp = float(melting_lfes.columns[0])
         ax.set_xticks([350, melting_temp, 360])
         ax.set_xticklabels(["350", r"$T_\textrm{m}$", "360"])
@@ -744,13 +760,17 @@ class NumFullyBoundStaplesBarrierLocationPlot(Plot):
         temps = np.array(s_lfes.columns, dtype=float)
         ax.plot(temps, s_barrier_is, color="0.4")
 
-        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfullyboundstaples.aves", sep=" ", index_col=0)
+        melting_lfes = pd.read_csv(
+            f"{input_dir}/{filebase}_lfes-melting-numfullyboundstaples.aves",
+            sep=" ",
+            index_col=0,
+        )
         melting_temp = float(melting_lfes.columns[0])
         ax.set_xticks([353, melting_temp, 356])
         ax.set_xticklabels(["353", r"$T_\textrm{m}$", "356"])
 
     def setup_axis(self, ax, xlabel=None, ylim_top=None):
-        ax.set_ylabel("Staples")
+        ax.set_ylabel("Num. staples")
         ax.set_xlabel(xlabel)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=5, integer=True))
         ax.set_ylim(bottom=0)
@@ -785,13 +805,17 @@ class NumFullDomainsBarrierLocationPlot(Plot):
         ax.plot(temps, d_barrier_is, color="0.4")
         ax.axhline(27, linestyle="--", color="0.4")
 
-        melting_lfes = pd.read_csv(f"{input_dir}/{filebase}_lfes-melting-numfulldomains.aves", sep=" ", index_col=0)
+        melting_lfes = pd.read_csv(
+            f"{input_dir}/{filebase}_lfes-melting-numfulldomains.aves",
+            sep=" ",
+            index_col=0,
+        )
         melting_temp = float(melting_lfes.columns[0])
         ax.set_xticks([350, melting_temp, 360])
         ax.set_xticklabels(["350", r"$T_\textrm{m}$", "360"])
 
     def setup_axis(self, ax, xlabel=None, ylim_top=None):
-        ax.set_ylabel("Domains")
+        ax.set_ylabel("Num. domain pairs")
         ax.set_xlabel(xlabel)
         ax.yaxis.set_major_locator(ticker.MaxNLocator(nbins=5, integer=True))
         ax.set_ylim(bottom=0)

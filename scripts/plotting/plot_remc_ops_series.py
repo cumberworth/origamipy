@@ -10,13 +10,12 @@ Has not been tested recently, so consider only as a starting point.
 
 import argparse
 
-import matplotlib
-
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlibstyles import styles
+from matplotlibstyles import plotutils
 import numpy as np
 
-import origamipy.plot as plot
+from origamipy import plotting
 
 
 def main():
@@ -26,10 +25,10 @@ def main():
     tags = ["numstaples", "numfulldomains", "nummisdomains", "numstackedpairs"]
     labels = ["Bound staples", "Bound domains", "Misbound domains", "Stacked pairs"]
     figsize = (
-        plot.cm_to_inches(18),
-        plot.cm_to_inches(args.reps * 12 * len(args.temps)),
+        plotutils.cm_to_inches(10),
+        plotutils.cm_to_inches(args.reps * 7 * len(args.temps)),
     )
-    plot.set_default_appearance()
+    styles.set_default_style()
     f, axes = plt.subplots(args.reps * len(args.temps), 1, figsize=figsize, dpi=300)
 
     ax_i = -1
@@ -38,6 +37,7 @@ def main():
             ax_i += 1
             ax = axes[ax_i]
             ax.set_xlabel("Walltime / s")
+            ax.set_title(f"T={temp}, rep={rep}")
 
             timeseries = {}
             times = []
@@ -102,7 +102,7 @@ def read_ops_from_file(filename, tags, skip):
     ops = {}
     for i, tag in enumerate(header):
         if tag in tags:
-            ops[tag] = all_ops[:, i]
+            ops[tag] = all_ops[:, i + 1]
 
     return ops
 
